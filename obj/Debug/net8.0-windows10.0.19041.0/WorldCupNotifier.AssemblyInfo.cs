@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WorldCupNotifier")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+299d71c2d02210a42eb41db60abb975276a270e2")]
 [assembly: System.Reflection.AssemblyProductAttribute("WorldCupNotifier")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WorldCupNotifier")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

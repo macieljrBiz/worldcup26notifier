@@ -31,13 +31,20 @@
                                Margin="0,10,0,0" />
                 </StackPanel>
 
-                <Border Grid.Column="1" Background="#F7FAFF" BorderBrush="#D8E0EC" BorderThickness="1" CornerRadius="12" Padding="16">
-                    <StackPanel>
-                        <TextBlock Text="Status" Foreground="#61708A" FontWeight="Bold" />
-                        <TextBlock x:Name="StatusTextBlock" Text="Idle" FontSize="24" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0" />
-                        <TextBlock x:Name="LastCheckedTextBlock" Text="Live data not checked yet." Foreground="#61708A" TextWrapping="Wrap" Margin="0,8,0,0" />
-                    </StackPanel>
-                </Border>
+                <Grid Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border Background="#F7FAFF" BorderBrush="#D8E0EC" BorderThickness="1" CornerRadius="12" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Status" Foreground="#61708A" FontWeight="Bold" />
+                            <TextBlock x:Name="StatusTextBlock" Text="Idle" FontSize="24" FontWeight="Bold" Foreground="#16A34A" Margin="0,4,0,0" />
+                            <TextBlock x:Name="LastCheckedTextBlock" Text="Live data not checked yet." Foreground="#61708A" TextWrapping="Wrap" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <Button x:Name="SettingsButton" Grid.Column="1" Content="⚙" Click="SettingsButton_Click" Width="48" Height="48" Margin="12,0,0,0" FontSize="20" Background="White" BorderBrush="#D8E0EC" Foreground="#61708A" />
+                </Grid>
             </Grid>
         </Border>
 
@@ -50,40 +57,6 @@
 
             <StackPanel Grid.Column="0">
                 <Border Background="White" CornerRadius="16" Padding="20" BorderBrush="#D8E0EC" BorderThickness="1">
-                    <StackPanel>
-                        <TextBlock Text="Configuration" FontSize="22" FontWeight="Bold" Foreground="#172033" />
-
-                        <TextBlock Text="football-data.org API key" Foreground="#61708A" FontWeight="SemiBold" Margin="0,16,0,6" />
-                        <PasswordBox x:Name="ApiKeyPasswordBox" Height="36" />
-
-                        <TextBlock Text="Competition code" Foreground="#61708A" FontWeight="SemiBold" Margin="0,14,0,6" />
-                        <TextBox x:Name="CompetitionTextBox" Text="WC" Height="36" />
-
-                        <TextBlock Text="Favorite team" Foreground="#61708A" FontWeight="SemiBold" Margin="0,14,0,6" />
-                        <ComboBox x:Name="TeamComboBox" Height="36" IsEditable="True" />
-
-                        <TextBlock Text="Alert types" Foreground="#61708A" FontWeight="SemiBold" Margin="0,18,0,8" />
-                        <CheckBox x:Name="KickoffCheckBox" Content="Game about to start / match live" IsChecked="True" Margin="0,0,0,8" />
-                        <CheckBox x:Name="GoalsCheckBox" Content="Goals / score changes" IsChecked="True" Margin="0,0,0,8" />
-                        <CheckBox x:Name="ResultsCheckBox" Content="Final results" IsChecked="True" Margin="0,0,0,8" />
-                        <CheckBox x:Name="BreakingNewsCheckBox" IsEnabled="False">
-                            <TextBlock Text="Breaking news / injuries (not supported by football-data.org)" TextWrapping="Wrap" />
-                        </CheckBox>
-
-                        <TextBlock Text="Polling interval, seconds" Foreground="#61708A" FontWeight="SemiBold" Margin="0,18,0,6" />
-                        <TextBox x:Name="PollingIntervalTextBox" Text="70" Height="36" />
-                        <TextBlock Text="Minimum is 70 seconds to stay below your 10 calls/minute limit." Foreground="#61708A" TextWrapping="Wrap" Margin="0,6,0,0" />
-
-                        <CheckBox x:Name="NotificationsEnabledCheckBox" Content="Enable native Windows notifications" IsChecked="True" Margin="0,18,0,0" />
-
-                        <WrapPanel Margin="0,18,0,0">
-                            <Button x:Name="SaveButton" Content="Save settings" Click="SaveButton_Click" Padding="14,8" Margin="0,0,8,8" />
-                            <Button x:Name="TestNotificationButton" Content="Send test notification" Click="TestNotificationButton_Click" Padding="14,8" Margin="0,0,8,8" />
-                        </WrapPanel>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="White" CornerRadius="16" Padding="20" BorderBrush="#D8E0EC" BorderThickness="1" Margin="0,18,0,0">
                     <StackPanel>
                         <TextBlock Text="Live polling" FontSize="22" FontWeight="Bold" Foreground="#172033" />
                         <TextBlock Text="Keep this app running to monitor match changes. Native notifications are sent by Windows, not the browser."

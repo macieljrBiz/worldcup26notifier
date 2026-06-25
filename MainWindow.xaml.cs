@@ -26,6 +26,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _pollTimer = new();
     private readonly string _settingsPath;
     private AppSettings _settings = new();
+    private SettingsWindow? _settingsWindow;
 
     public MainWindow()
     {
@@ -40,8 +41,7 @@ public partial class MainWindow : Window
         _pollTimer.Tick += async (_, _) => await CheckLiveDataAsync();
 
         LoadSettings();
-        PopulateTeams(FallbackTeams);
-        ApplySettingsToUi();
+        UpdatePollingInterval();
         UpdateFeedSummary();
     }
 
@@ -56,58 +56,50 @@ public partial class MainWindow : Window
         _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
     }
 
-    private void SaveSettings()
+    private void ReloadSettings()
     {
-        _settings.ApiKey = ApiKeyPasswordBox.Password.Trim();
-        _settings.Competition = string.IsNullOrWhiteSpace(CompetitionTextBox.Text) ? "WC" : CompetitionTextBox.Text.Trim().ToUpperInvariant();
-        _settings.FavoriteTeam = TeamComboBox.Text.Trim();
-        _settings.NotifyKickoff = KickoffCheckBox.IsChecked == true;
-        _settings.NotifyGoals = GoalsCheckBox.IsChecked == true;
-        _settings.NotifyResults = ResultsCheckBox.IsChecked == true;
-        _settings.NotificationsEnabled = NotificationsEnabledCheckBox.IsChecked == true;
-        _settings.PollingIntervalSeconds = Math.Max(70, ParseInt(PollingIntervalTextBox.Text, 70));
-
-        Directory.CreateDirectory(Path.GetDirectoryName(_settingsPath)!);
-        File.WriteAllText(_settingsPath, JsonSerializer.Serialize(_settings, new JsonSerializerOptions { WriteIndented = true }));
-        ApplySettingsToUi();
-        SetStatus("Settings saved", $"Polling every {_settings.PollingIntervalSeconds} seconds.");
+        LoadSettings();
+        UpdatePollingInterval();
     }
 
-    private void ApplySettingsToUi()
+    public void SetStatusPublic(string status, string detail)
     {
-        ApiKeyPasswordBox.Password = _settings.ApiKey;
-        CompetitionTextBox.Text = _settings.Competition;
-        TeamComboBox.Text = _settings.FavoriteTeam;
-        KickoffCheckBox.IsChecked = _settings.NotifyKickoff;
-        GoalsCheckBox.IsChecked = _settings.NotifyGoals;
-        ResultsCheckBox.IsChecked = _settings.NotifyResults;
-        NotificationsEnabledCheckBox.IsChecked = _settings.NotificationsEnabled;
-        PollingIntervalTextBox.Text = _settings.PollingIntervalSeconds.ToString();
+        SetStatus(status, detail);
+    }
 
+    public void AddFeedItemPublic(string title, string message)
+    {
+        AddFeedItem(title, message);
+    }
+
+    private void UpdatePollingInterval()
+    {
         _pollTimer.Interval = TimeSpan.FromSeconds(Math.Max(70, _settings.PollingIntervalSeconds));
     }
 
-    private void PopulateTeams(IEnumerable<string> teamNames)
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        var names = teamNames
-            .Append(_settings.FavoriteTeam)
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(name => name)
-            .ToList();
-
-        TeamComboBox.ItemsSource = names;
+        if (_settingsWindow == null || !_settingsWindow.IsVisible)
+        {
+            _settingsWindow = new SettingsWindow { Owner = this };
+            _settingsWindow.SetParentWindow(this);
+            _settingsWindow.ShowDialog();
+        }
+        else
+        {
+            _settingsWindow.Focus();
+        }
     }
 
     private async void CheckNowButton_Click(object sender, RoutedEventArgs e)
     {
-        SaveSettings();
+        ReloadSettings();
         await CheckLiveDataAsync();
     }
 
     private async void StartStopButton_Click(object sender, RoutedEventArgs e)
     {
-        SaveSettings();
+        ReloadSettings();
 
         if (_pollTimer.IsEnabled)
         {
@@ -121,25 +113,6 @@ public partial class MainWindow : Window
         _pollTimer.Start();
         StartStopButton.Content = "Stop polling";
         SetStatus("Polling started", $"Next automatic check in {_settings.PollingIntervalSeconds} seconds.");
-    }
-
-    private void SaveButton_Click(object sender, RoutedEventArgs e)
-    {
-        SaveSettings();
-    }
-
-    private async void TestNotificationButton_Click(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await SendNativeNotificationAsync("World Cup Notifier", "Native Windows notifications are working.");
-            AddFeedItem("Test notification sent", "Windows accepted a native toast notification request.");
-        }
-        catch (Exception ex)
-        {
-            AddFeedItem("Test notification failed", ex.Message);
-            SetStatus("Notification error", ex.Message);
-        }
     }
 
     private void ClearFeedButton_Click(object sender, RoutedEventArgs e)
@@ -168,7 +141,6 @@ public partial class MainWindow : Window
         try
         {
             var response = await FetchMatchesAsync();
-            PopulateTeams(response.Matches.SelectMany(match => new[] { match.HomeTeam?.Name, match.AwayTeam?.Name }).OfType<string>());
 
             var events = DetectEvents(response.Matches);
             foreach (var alert in events)

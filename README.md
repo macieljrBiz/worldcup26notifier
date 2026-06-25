@@ -25,5 +25,3 @@ Windows native WPF/XAML app for tracking Soccer World Cup match updates from foo
 cd C:\repos\personal\worldcupnotifier
 dotnet run
 ```
-
-The previous browser/Node prototype is preserved in `legacy-web\`.

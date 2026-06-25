@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>World Cup Team Alerts</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Soccer World Cup</p>
+          <h1>Team notification tracker</h1>
+          <p class="hero-copy">
+            Pick your favorite team, choose the moments you care about, and get browser or in-app alerts from football-data.org match updates.
+          </p>
+        </div>
+        <div class="status-card" aria-live="polite">
+          <span class="status-label">Notifications</span>
+          <strong id="notificationStatus">Off</strong>
+          <small id="permissionStatus">Browser permission not requested</small>
+        </div>
+      </section>
+
+      <section class="panel grid-panel" aria-labelledby="preferencesTitle">
+        <div>
+          <p class="eyebrow">Step 1</p>
+          <h2 id="preferencesTitle">Choose your team</h2>
+          <label for="teamSelect">Favorite team</label>
+          <select id="teamSelect"></select>
+        </div>
+
+        <div>
+          <p class="eyebrow">Step 2</p>
+          <h2>Choose alert types</h2>
+          <div class="event-options" id="eventOptions"></div>
+        </div>
+
+        <div>
+          <p class="eyebrow">Step 3</p>
+          <h2>Turn alerts on or off</h2>
+          <label class="switch-row">
+            <input id="notificationsToggle" type="checkbox">
+            <span>
+              <strong>Enable native system notifications</strong>
+              <small>Uses the local Node server to send Windows notifications and always records alerts below.</small>
+            </span>
+          </label>
+          <button id="requestPermissionButton" type="button">Send test system notification</button>
+          <p id="notificationHelp" class="inline-help"></p>
+        </div>
+      </section>
+
+      <section class="panel simulator" aria-labelledby="simulatorTitle">
+        <div>
+          <p class="eyebrow">Live data</p>
+          <h2 id="simulatorTitle">football-data.org polling</h2>
+          <p>
+            The app polls through a local proxy every 70 seconds to stay below your 10-calls-per-minute API limit.
+          </p>
+          <p id="liveStatus" class="inline-help">Live data not checked yet.</p>
+        </div>
+        <div class="actions">
+          <button id="refreshLiveButton" type="button">Check live data now</button>
+          <button id="autoLiveButton" class="secondary" type="button">Start live polling</button>
+          <button id="simulateButton" class="ghost" type="button">Simulate test event</button>
+          <button id="clearFeedButton" class="ghost" type="button">Clear feed</button>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="feedTitle">
+        <div class="feed-header">
+          <div>
+            <p class="eyebrow">Alerts</p>
+            <h2 id="feedTitle">Notification feed</h2>
+          </div>
+          <span id="feedCount" class="pill">0 alerts</span>
+        </div>
+        <ol id="feedList" class="feed-list"></ol>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

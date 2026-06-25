@@ -1,0 +1,39 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    <!-- Typography Resources -->
+
+    <!-- Font Sizes -->
+    <sys:Double x:Key="FontSizeHeader1">34</sys:Double>
+    <sys:Double x:Key="FontSizeHeader2">24</sys:Double>
+    <sys:Double x:Key="FontSizeHeader3">22</sys:Double>
+    <sys:Double x:Key="FontSizeBody">16</sys:Double>
+    <sys:Double x:Key="FontSizeLabel">13</sys:Double>
+    <sys:Double x:Key="FontSizeCaption">12</sys:Double>
+
+    <!-- Font Weights -->
+    <FontWeight x:Key="FontWeightBold">Bold</FontWeight>
+    <FontWeight x:Key="FontWeightSemiBold">SemiBold</FontWeight>
+    <FontWeight x:Key="FontWeightRegular">Regular</FontWeight>
+
+    <!-- Spacing -->
+    <Thickness x:Key="SpaceXXSmall">4</Thickness>
+    <Thickness x:Key="SpaceXSmall">8</Thickness>
+    <Thickness x:Key="SpaceSmall">12</Thickness>
+    <Thickness x:Key="SpaceMedium">16</Thickness>
+    <Thickness x:Key="SpaceLarge">18</Thickness>
+    <Thickness x:Key="SpaceXLarge">20</Thickness>
+    <Thickness x:Key="SpaceXXLarge">24</Thickness>
+
+    <!-- Margin Presets -->
+    <Thickness x:Key="MarginWindowOuter">24</Thickness>
+    <Thickness x:Key="MarginContainerPadding">20</Thickness>
+    <Thickness x:Key="MarginHeaderPadding">24</Thickness>
+    <Thickness x:Key="MarginButtonSmall">0,0,8,8</Thickness>
+
+    <!-- Corner Radius -->
+    <CornerRadius x:Key="CornerRadiusSmall">10</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusMedium">16</CornerRadius>
+    <CornerRadius x:Key="CornerRadiusLarge">20</CornerRadius>
+
+</ResourceDictionary>

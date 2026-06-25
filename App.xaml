@@ -4,6 +4,21 @@
              xmlns:local="clr-namespace:WorldCupNotifier"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Always load typography, brushes, styles, animations -->
+                <ResourceDictionary Source="Styles/Typography.xaml" />
+                <ResourceDictionary Source="Styles/Brushes.xaml" />
+                <ResourceDictionary Source="Styles/ControlStyles.xaml" />
+                <ResourceDictionary Source="Styles/Animations.xaml" />
+                <!-- Load light theme by default -->
+                <ResourceDictionary Source="Styles/Colors_Light.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Converters -->
+            <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <local:EventTypeConverter x:Key="EventTypeConverter" />
+            <local:EventTypeBackgroundConverter x:Key="EventTypeBackgroundConverter" />
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

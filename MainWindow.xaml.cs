@@ -5,6 +5,9 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace WorldCupNotifier;
@@ -43,6 +46,9 @@ public partial class MainWindow : Window
         LoadSettings();
         UpdatePollingInterval();
         UpdateFeedSummary();
+        
+        Loaded += async (_, _) => await MainWindow_LoadedAsync();
+        Loaded += MainWindow_Loaded_WireAnimations;
     }
 
     private void LoadSettings()
@@ -56,6 +62,81 @@ public partial class MainWindow : Window
         _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
     }
 
+    private async Task MainWindow_LoadedAsync()
+    {
+        if (_settings.ShowNotificationsFromMinutes > 0)
+        {
+            await InitializeHistoricalFeed();
+        }
+
+        if (_settings.AutoStartPolling)
+        {
+            _pollTimer.Start();
+            StartStopButton.Content = "Stop polling";
+            SetStatus("Polling auto-started", $"Next automatic check in {_settings.PollingIntervalSeconds} seconds.");
+        }
+    }
+
+    private void MainWindow_Loaded_WireAnimations(object sender, RoutedEventArgs e)
+    {
+        // Wire event handlers for button animations
+        CheckNowButton.MouseEnter += Button_MouseEnter;
+        CheckNowButton.MouseLeave += Button_MouseLeave;
+        
+        StartStopButton.MouseEnter += Button_MouseEnter;
+        StartStopButton.MouseLeave += Button_MouseLeave;
+        
+        if (FindName("ClearFeedButton") is Button clearButton)
+        {
+            clearButton.MouseEnter += Button_MouseEnter;
+            clearButton.MouseLeave += Button_MouseLeave;
+        }
+        
+        SettingsButton.MouseEnter += Button_MouseEnter;
+        SettingsButton.MouseLeave += Button_MouseLeave;
+    }
+
+    private async Task InitializeHistoricalFeed()
+    {
+        if (string.IsNullOrWhiteSpace(_settings.ApiKey))
+        {
+            return;
+        }
+
+        SetStatus("Loading historical notifications", "Fetching recent World Cup data...");
+
+        try
+        {
+            var response = await FetchMatchesAsync();
+            var events = DetectEvents(response.Matches);
+
+            var cutoffMinutes = _settings.ShowNotificationsFromMinutes;
+            var historicalItemsCount = 0;
+
+            foreach (var alert in events)
+            {
+                AddFeedItem(alert.Title, alert.Message, alert.EventType, alert.HomeTeam, alert.AwayTeam, alert.HomeScore, alert.AwayScore, alert.MatchUtcDate, alert.MatchStatus);
+                historicalItemsCount++;
+            }
+
+            if (historicalItemsCount > 0)
+            {
+                AddFeedItem("Initialization complete", $"Loaded {historicalItemsCount} notification(s) from last {cutoffMinutes} minute(s).", "Info");
+                SetStatus("Historical feed loaded", $"{historicalItemsCount} event(s) found.");
+            }
+            else
+            {
+                AddFeedItem("No recent notifications", $"No World Cup events detected in the last {cutoffMinutes} minute(s).", "Info");
+                SetStatus("Historical feed loaded", "No recent events.");
+            }
+        }
+        catch (Exception ex)
+        {
+            AddFeedItem("Failed to load historical data", ex.Message, "Info");
+            SetStatus("Error loading history", ex.Message);
+        }
+    }
+
     private void ReloadSettings()
     {
         LoadSettings();
@@ -67,10 +148,7 @@ public partial class MainWindow : Window
         SetStatus(status, detail);
     }
 
-    public void AddFeedItemPublic(string title, string message)
-    {
-        AddFeedItem(title, message);
-    }
+
 
     private void UpdatePollingInterval()
     {
@@ -121,17 +199,68 @@ public partial class MainWindow : Window
         UpdateFeedSummary();
     }
 
+    private void Button_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (sender is Button button)
+        {
+            var storyboard = (Storyboard)Resources["ButtonHoverScale"];
+            storyboard?.Begin(button);
+        }
+    }
+
+    private void Button_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (sender is Button button)
+        {
+            var storyboard = (Storyboard)Resources["ButtonHoverRestore"];
+            storyboard?.Begin(button);
+        }
+    }
+
+    private void ApplyEntranceAnimationToNewItem()
+    {
+        if (FeedListBox.Items.Count > 0)
+        {
+            var container = FeedListBox.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
+            if (container != null)
+            {
+                var storyboard = (Storyboard)Resources["FeedItemEntranceAnimation"];
+                storyboard?.Begin(container);
+
+                // Apply pulse animation to progress bar for LIVE matches
+                if (container.DataContext is AlertItem item && item.MatchStatus?.Contains("LIVE") == true)
+                {
+                    var progressBar = FindVisualChild<ProgressBar>(container);
+                    if (progressBar != null)
+                    {
+                        var pulseStoryboard = (Storyboard)Resources["ProgressBarLiveAnimation"];
+                        pulseStoryboard?.Begin(progressBar);
+                    }
+                }
+            }
+        }
+    }
+
+    private T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T typedChild)
+                return typedChild;
+
+            var result = FindVisualChild<T>(child);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+
     private async Task CheckLiveDataAsync()
     {
         if (string.IsNullOrWhiteSpace(_settings.ApiKey))
         {
             SetStatus("Missing API key", "Add your football-data.org API key and save settings.");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(_settings.FavoriteTeam))
-        {
-            SetStatus("Missing favorite team", "Select or type a favorite team.");
             return;
         }
 
@@ -145,7 +274,7 @@ public partial class MainWindow : Window
             var events = DetectEvents(response.Matches);
             foreach (var alert in events)
             {
-                AddFeedItem(alert.Title, alert.Message);
+                AddFeedItem(alert.Title, alert.Message, alert.EventType, alert.HomeTeam, alert.AwayTeam, alert.HomeScore, alert.AwayScore, alert.MatchUtcDate, alert.MatchStatus);
 
                 if (_settings.NotificationsEnabled)
                 {
@@ -221,16 +350,30 @@ public partial class MainWindow : Window
         {
             yield return new DetectedEvent(
                 $"{match.Id}-kickoff-{match.UtcDate:O}",
-                $"{_settings.FavoriteTeam} match starts soon",
-                $"{FormatMatchTitle(match)} kicks off at {match.UtcDate.LocalDateTime:t}.");
+                "World Cup match starts soon",
+                $"{FormatMatchTitle(match)} kicks off at {match.UtcDate.LocalDateTime:t}.",
+                "Kickoff",
+                match.HomeTeam?.Name,
+                match.AwayTeam?.Name,
+                snapshot.HomeScore,
+                snapshot.AwayScore,
+                match.UtcDate,
+                snapshot.Status);
         }
 
         if (previous is not null && !IsLiveStatus(previous.Status) && IsLiveStatus(snapshot.Status))
         {
             yield return new DetectedEvent(
                 $"{match.Id}-live-{snapshot.Status}",
-                $"{_settings.FavoriteTeam} match is live",
-                $"{FormatMatchTitle(match)} is now {snapshot.Status.ToLowerInvariant().Replace("_", " ")}.");
+                "World Cup match is live",
+                $"{FormatMatchTitle(match)} is now {snapshot.Status.ToLowerInvariant().Replace("_", " ")}.",
+                "Kickoff",
+                match.HomeTeam?.Name,
+                match.AwayTeam?.Name,
+                snapshot.HomeScore,
+                snapshot.AwayScore,
+                match.UtcDate,
+                snapshot.Status);
         }
     }
 
@@ -249,7 +392,14 @@ public partial class MainWindow : Window
             yield return new DetectedEvent(
                 $"{match.Id}-goal-{snapshot.HomeScore}-{snapshot.AwayScore}",
                 $"Goal update: {FormatMatchTitle(match)}",
-                $"Current score: {snapshot.HomeScore ?? 0}-{snapshot.AwayScore ?? 0}.");
+                $"Current score: {snapshot.HomeScore ?? 0}-{snapshot.AwayScore ?? 0}.",
+                "Goal",
+                match.HomeTeam?.Name,
+                match.AwayTeam?.Name,
+                snapshot.HomeScore,
+                snapshot.AwayScore,
+                match.UtcDate,
+                snapshot.Status);
         }
     }
 
@@ -265,7 +415,14 @@ public partial class MainWindow : Window
             yield return new DetectedEvent(
                 $"{match.Id}-finished-{snapshot.HomeScore}-{snapshot.AwayScore}",
                 $"Final result: {FormatMatchTitle(match)}",
-                $"Full time: {snapshot.HomeScore ?? 0}-{snapshot.AwayScore ?? 0}.");
+                $"Full time: {snapshot.HomeScore ?? 0}-{snapshot.AwayScore ?? 0}.",
+                "Result",
+                match.HomeTeam?.Name,
+                match.AwayTeam?.Name,
+                snapshot.HomeScore,
+                snapshot.AwayScore,
+                match.UtcDate,
+                snapshot.Status);
         }
     }
 
@@ -282,8 +439,7 @@ public partial class MainWindow : Window
 
     private bool IsFavoriteMatch(Match match)
     {
-        return string.Equals(match.HomeTeam?.Name, _settings.FavoriteTeam, StringComparison.OrdinalIgnoreCase)
-            || string.Equals(match.AwayTeam?.Name, _settings.FavoriteTeam, StringComparison.OrdinalIgnoreCase);
+        return true; // Process all matches - no team filtering
     }
 
     private static bool IsLiveStatus(string status)
@@ -296,9 +452,9 @@ public partial class MainWindow : Window
         return $"{match.HomeTeam?.Name ?? "Home"} vs {match.AwayTeam?.Name ?? "Away"}";
     }
 
-    private void AddFeedItem(string title, string message)
+    private void AddFeedItem(string title, string message, string eventType = "Info", string? homeTeam = null, string? awayTeam = null, int? homeScore = null, int? awayScore = null, DateTimeOffset? matchUtcDate = null, string? matchStatus = null)
     {
-        _feed.Insert(0, new AlertItem(title, message, DateTimeOffset.Now));
+        _feed.Insert(0, new AlertItem(title, message, DateTimeOffset.Now, eventType, homeTeam, awayTeam, homeScore, awayScore, matchUtcDate, matchStatus));
 
         while (_feed.Count > 50)
         {
@@ -306,6 +462,14 @@ public partial class MainWindow : Window
         }
 
         UpdateFeedSummary();
+
+        // Defer animation until container is created
+        Dispatcher.BeginInvoke(() => ApplyEntranceAnimationToNewItem(), DispatcherPriority.Loaded);
+    }
+
+    public void AddFeedItemPublic(string title, string message)
+    {
+        AddFeedItem(title, message);
     }
 
     private void UpdateFeedSummary()
@@ -331,24 +495,57 @@ public partial class MainWindow : Window
     }
 }
 
-public sealed class AppSettings
-{
-    public string ApiKey { get; set; } = "";
-    public string Competition { get; set; } = "WC";
-    public string FavoriteTeam { get; set; } = "Brazil";
-    public bool NotifyKickoff { get; set; } = true;
-    public bool NotifyGoals { get; set; } = true;
-    public bool NotifyResults { get; set; } = true;
-    public bool NotificationsEnabled { get; set; } = true;
-    public int PollingIntervalSeconds { get; set; } = 70;
-}
-
-public sealed record AlertItem(string Title, string Message, DateTimeOffset CreatedAt)
+public sealed record AlertItem(
+    string Title, 
+    string Message, 
+    DateTimeOffset CreatedAt,
+    string EventType = "Info",
+    string? HomeTeam = null,
+    string? AwayTeam = null,
+    int? HomeScore = null,
+    int? AwayScore = null,
+    DateTimeOffset? MatchUtcDate = null,
+    string? MatchStatus = null)
 {
     public string CreatedAtDisplay => CreatedAt.ToString("g");
+    public string? MatchDisplay => HomeTeam != null && AwayTeam != null ? $"{HomeTeam} vs {AwayTeam}" : null;
+    public string? ScoreDisplay => HomeScore != null && AwayScore != null ? $"{HomeScore}-{AwayScore}" : null;
+    public string EventIcon => EventType switch
+    {
+        "Kickoff" => "⚽",
+        "Goal" => "⚡",
+        "Result" => "🏁",
+        _ => "ℹ️"
+    };
+    public double MatchProgressPercentage
+    {
+        get
+        {
+            if (MatchUtcDate == null || MatchStatus == null || MatchStatus == "TIMED")
+                return 0;
+            if (MatchStatus == "FINISHED" || MatchStatus == "POSTPONED" || MatchStatus == "CANCELLED")
+                return 100;
+            
+            var elapsed = DateTimeOffset.UtcNow - MatchUtcDate.Value;
+            var total = TimeSpan.FromMinutes(90);
+            var progress = Math.Min(100, (elapsed.TotalMinutes / total.TotalMinutes) * 100);
+            return Math.Max(0, progress);
+        }
+    }
 }
 
-public sealed record DetectedEvent(string Id, string Title, string Message);
+public sealed record DetectedEvent(
+    string Id, 
+    string Title, 
+    string Message,
+    string EventType = "Info",
+    string? HomeTeam = null,
+    string? AwayTeam = null,
+    int? HomeScore = null,
+    int? AwayScore = null,
+    DateTimeOffset? MatchUtcDate = null,
+    string? MatchStatus = null
+);
 
 public sealed record MatchSnapshot(int Id, string Status, int? HomeScore, int? AwayScore)
 {

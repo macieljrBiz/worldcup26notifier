@@ -5,39 +5,140 @@
         Height="700"
         Width="480"
         WindowStartupLocation="CenterOwner"
-        Background="#F4F7FB"
+        Background="{StaticResource WindowBackgroundBrush}"
         ShowInTaskbar="False"
         ResizeMode="NoResize">
-    <Grid Margin="20">
+    <Grid Margin="{StaticResource MarginContainerPadding}">
         <StackPanel>
-            <TextBlock Text="Configuration" FontSize="24" FontWeight="Bold" Foreground="#172033" Margin="0,0,0,20" />
+            <TextBlock Text="Configuration" 
+                       FontSize="{StaticResource FontSizeHeader2}" 
+                       FontWeight="Bold" 
+                       Foreground="{StaticResource PrimaryTextBrush}" 
+                       Margin="0,0,0,20" />
 
-            <TextBlock Text="football-data.org API key" Foreground="#61708A" FontWeight="SemiBold" Margin="0,0,0,6" />
-            <PasswordBox x:Name="ApiKeyPasswordBox" Height="36" Margin="0,0,0,14" />
+            <TextBlock Text="football-data.org API key" 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       FontWeight="SemiBold" 
+                       Margin="0,0,0,6" />
+            <PasswordBox x:Name="ApiKeyPasswordBox" 
+                         Height="36" 
+                         Margin="0,0,0,14"
+                         Background="{StaticResource CardBackgroundBrush}"
+                         Foreground="{StaticResource PrimaryTextBrush}"
+                         BorderBrush="{StaticResource BorderBrush}"
+                         BorderThickness="1"
+                         Padding="8,6" />
 
-            <TextBlock Text="Competition code" Foreground="#61708A" FontWeight="SemiBold" Margin="0,0,0,6" />
-            <TextBox x:Name="CompetitionTextBox" Height="36" Margin="0,0,0,14" />
+            <TextBlock Text="Competition code" 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       FontWeight="SemiBold" 
+                       Margin="0,0,0,6" />
+            <TextBox x:Name="CompetitionTextBox" 
+                     Height="36" 
+                     Margin="0,0,0,14"
+                     Background="{StaticResource CardBackgroundBrush}"
+                     Foreground="{StaticResource PrimaryTextBrush}"
+                     BorderBrush="{StaticResource BorderBrush}"
+                     BorderThickness="1"
+                     Padding="8,6" />
 
-            <TextBlock Text="Favorite team" Foreground="#61708A" FontWeight="SemiBold" Margin="0,0,0,6" />
-            <ComboBox x:Name="TeamComboBox" Height="36" IsEditable="True" Margin="0,0,0,14" />
-
-            <TextBlock Text="Alert types" Foreground="#61708A" FontWeight="SemiBold" Margin="0,18,0,8" />
-            <CheckBox x:Name="KickoffCheckBox" Content="Game about to start / match live" IsChecked="True" Margin="0,0,0,8" />
-            <CheckBox x:Name="GoalsCheckBox" Content="Goals / score changes" IsChecked="True" Margin="0,0,0,8" />
-            <CheckBox x:Name="ResultsCheckBox" Content="Final results" IsChecked="True" Margin="0,0,0,8" />
-            <CheckBox x:Name="BreakingNewsCheckBox" IsEnabled="False">
-                <TextBlock Text="Breaking news / injuries (not supported by football-data.org)" TextWrapping="Wrap" />
+            <TextBlock Text="Alert types" 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       FontWeight="SemiBold" 
+                       Margin="0,18,0,8" />
+            <CheckBox x:Name="KickoffCheckBox" 
+                      Content="Game about to start / match live" 
+                      IsChecked="True" 
+                      Margin="0,0,0,8"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
+            <CheckBox x:Name="GoalsCheckBox" 
+                      Content="Goals / score changes" 
+                      IsChecked="True" 
+                      Margin="0,0,0,8"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
+            <CheckBox x:Name="ResultsCheckBox" 
+                      Content="Final results" 
+                      IsChecked="True" 
+                      Margin="0,0,0,8"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
+            <CheckBox x:Name="BreakingNewsCheckBox" 
+                      IsEnabled="False"
+                      Foreground="{StaticResource PrimaryTextBrush}">
+                <TextBlock Text="Breaking news / injuries (not supported by football-data.org)" 
+                           TextWrapping="Wrap" 
+                           Foreground="{StaticResource PrimaryTextBrush}" />
             </CheckBox>
 
-            <TextBlock Text="Polling interval, seconds" Foreground="#61708A" FontWeight="SemiBold" Margin="0,18,0,6" />
-            <TextBox x:Name="PollingIntervalTextBox" Height="36" Margin="0,0,0,6" />
-            <TextBlock Text="Minimum is 70 seconds to stay below your 10 calls/minute limit." Foreground="#61708A" TextWrapping="Wrap" Margin="0,0,0,14" />
+            <TextBlock Text="Polling interval, seconds" 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       FontWeight="SemiBold" 
+                       Margin="0,18,0,6" />
+            <TextBox x:Name="PollingIntervalTextBox" 
+                     Height="36" 
+                     Margin="0,0,0,6"
+                     Background="{StaticResource CardBackgroundBrush}"
+                     Foreground="{StaticResource PrimaryTextBrush}"
+                     BorderBrush="{StaticResource BorderBrush}"
+                     BorderThickness="1"
+                     Padding="8,6" />
+            <TextBlock Text="Minimum is 70 seconds to stay below your 10 calls/minute limit." 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       TextWrapping="Wrap" 
+                       Margin="0,0,0,14" />
 
-            <CheckBox x:Name="NotificationsEnabledCheckBox" Content="Enable native Windows notifications" IsChecked="True" Margin="0,18,0,20" />
+            <TextBlock Text="Show notifications from last (minutes)" 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       FontWeight="SemiBold" 
+                       Margin="0,18,0,6" />
+            <TextBox x:Name="ShowNotificationsFromMinutesTextBox" 
+                     Height="36" 
+                     Margin="0,0,0,6"
+                     Background="{StaticResource CardBackgroundBrush}"
+                     Foreground="{StaticResource PrimaryTextBrush}"
+                     BorderBrush="{StaticResource BorderBrush}"
+                     BorderThickness="1"
+                     Padding="8,6" />
+            <TextBlock Text="When you start the app, load alerts from the last N minutes. Set to 0 to skip. Range: 1-60 minutes." 
+                       Foreground="{StaticResource SecondaryTextBrush}" 
+                       TextWrapping="Wrap" 
+                       Margin="0,0,0,14" />
+
+            <CheckBox x:Name="NotificationsEnabledCheckBox" 
+                      Content="Enable native Windows notifications" 
+                      IsChecked="True" 
+                      Margin="0,18,0,8"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
+            <CheckBox x:Name="AutoStartPollingCheckBox" 
+                      Content="Auto-start polling on app launch" 
+                      IsChecked="True" 
+                      Margin="0,0,0,8"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
+            <CheckBox x:Name="UseDarkModeCheckBox" 
+                      Content="Use dark theme" 
+                      IsChecked="False" 
+                      Margin="0,0,0,20"
+                      Foreground="{StaticResource PrimaryTextBrush}" />
 
             <WrapPanel>
-                <Button x:Name="TestNotificationButton" Content="Send test notification" Click="TestNotificationButton_Click" Padding="14,8" Margin="0,0,8,8" />
-                <Button x:Name="CloseButton" Content="Close" Click="CloseButton_Click" Padding="14,8" Margin="0,0,8,8" IsDefault="True" />
+                <Button x:Name="TestNotificationButton" 
+                        Content="Send test notification" 
+                        Click="TestNotificationButton_Click" 
+                        Padding="14,8" 
+                        Margin="0,0,8,8"
+                        Background="{StaticResource CardBackgroundBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        Cursor="Hand" />
+                <Button x:Name="CloseButton" 
+                        Content="Close" 
+                        Click="CloseButton_Click" 
+                        Padding="14,8" 
+                        Margin="0,0,8,8" 
+                        IsDefault="True"
+                        Background="{StaticResource CardBackgroundBrush}"
+                        BorderBrush="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        Cursor="Hand" />
             </WrapPanel>
         </StackPanel>
     </Grid>

@@ -1,0 +1,71 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Animation Storyboards -->
+
+    <!-- Feed Item Entrance Animation (Slide + Fade) -->
+    <Storyboard x:Key="FeedItemEntranceAnimation">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" 
+                         From="0" To="1" 
+                         Duration="0:0:0.3" />
+        <ThicknessAnimation Storyboard.TargetProperty="(FrameworkElement.Margin)" 
+                            From="20,0,0,0" To="0,0,0,0" 
+                            Duration="0:0:0.3" />
+    </Storyboard>
+
+    <!-- Status Color Transition -->
+    <Storyboard x:Key="StatusColorTransition">
+        <ColorAnimation Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)" 
+                        Duration="0:0:0.2" />
+    </Storyboard>
+
+    <!-- Pulse Animation (for LIVE badges) -->
+    <Storyboard x:Key="PulseAnimation" RepeatBehavior="Forever">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" 
+                         From="1" To="0.6" 
+                         Duration="0:0:0.5" 
+                         AutoReverse="True" />
+    </Storyboard>
+
+    <!-- Progress Bar Live Animation (for LIVE matches) -->
+    <Storyboard x:Key="ProgressBarLiveAnimation" RepeatBehavior="Forever">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" 
+                         From="1" To="0.7" 
+                         Duration="0:0:0.8" 
+                         AutoReverse="True" />
+    </Storyboard>
+
+    <!-- Button Hover Scale -->
+    <Storyboard x:Key="ButtonHoverScale">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" 
+                         To="1.05" 
+                         Duration="0:0:0.15" />
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" 
+                         To="1.05" 
+                         Duration="0:0:0.15" />
+    </Storyboard>
+
+    <!-- Button Hover Restore -->
+    <Storyboard x:Key="ButtonHoverRestore">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" 
+                         To="1" 
+                         Duration="0:0:0.15" />
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" 
+                         To="1" 
+                         Duration="0:0:0.15" />
+    </Storyboard>
+
+    <!-- Dialog Fade In -->
+    <Storyboard x:Key="DialogFadeIn">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" 
+                         From="0" To="1" 
+                         Duration="0:0:0.15" />
+    </Storyboard>
+
+    <!-- Dialog Fade Out -->
+    <Storyboard x:Key="DialogFadeOut">
+        <DoubleAnimation Storyboard.TargetProperty="(UIElement.Opacity)" 
+                         From="1" To="0" 
+                         Duration="0:0:0.1" />
+    </Storyboard>
+
+</ResourceDictionary>

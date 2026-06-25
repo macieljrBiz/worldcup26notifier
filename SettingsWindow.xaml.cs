@@ -25,7 +25,6 @@ public partial class SettingsWindow : Window
     {
         _isLoading = true;
         LoadSettings();
-        PopulateTeams();
         ApplySettingsToUi();
         WireEventHandlers();
         _isLoading = false;
@@ -51,12 +50,14 @@ public partial class SettingsWindow : Window
     {
         _settings.ApiKey = ApiKeyPasswordBox.Password.Trim();
         _settings.Competition = string.IsNullOrWhiteSpace(CompetitionTextBox.Text) ? "WC" : CompetitionTextBox.Text.Trim().ToUpperInvariant();
-        _settings.FavoriteTeam = TeamComboBox.Text.Trim();
         _settings.NotifyKickoff = KickoffCheckBox.IsChecked == true;
         _settings.NotifyGoals = GoalsCheckBox.IsChecked == true;
         _settings.NotifyResults = ResultsCheckBox.IsChecked == true;
         _settings.NotificationsEnabled = NotificationsEnabledCheckBox.IsChecked == true;
         _settings.PollingIntervalSeconds = Math.Max(70, ParseInt(PollingIntervalTextBox.Text, 70));
+        _settings.ShowNotificationsFromMinutes = Math.Clamp(ParseInt(ShowNotificationsFromMinutesTextBox.Text, 5), 0, 60);
+        _settings.AutoStartPolling = AutoStartPollingCheckBox.IsChecked == true;
+        _settings.UseDarkMode = UseDarkModeCheckBox.IsChecked == true;
 
         var settingsPath = System.IO.Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -74,40 +75,20 @@ public partial class SettingsWindow : Window
     {
         ApiKeyPasswordBox.Password = _settings.ApiKey;
         CompetitionTextBox.Text = _settings.Competition;
-        TeamComboBox.Text = _settings.FavoriteTeam;
         KickoffCheckBox.IsChecked = _settings.NotifyKickoff;
         GoalsCheckBox.IsChecked = _settings.NotifyGoals;
         ResultsCheckBox.IsChecked = _settings.NotifyResults;
         NotificationsEnabledCheckBox.IsChecked = _settings.NotificationsEnabled;
         PollingIntervalTextBox.Text = _settings.PollingIntervalSeconds.ToString();
-    }
-
-    private void PopulateTeams()
-    {
-        var fallbackTeams = new[]
-        {
-            "Argentina", "Australia", "Belgium", "Brazil", "Cameroon", "Canada", "Costa Rica", "Croatia",
-            "Denmark", "Ecuador", "England", "France", "Germany", "Ghana", "Iran", "Japan", "Mexico",
-            "Morocco", "Netherlands", "Poland", "Portugal", "Qatar", "Saudi Arabia", "Senegal",
-            "Serbia", "South Korea", "Spain", "Switzerland", "Tunisia", "United States", "Uruguay", "Wales"
-        };
-
-        var names = fallbackTeams
-            .Append(_settings.FavoriteTeam)
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .OrderBy(name => name)
-            .ToList();
-
-        TeamComboBox.ItemsSource = names;
+        ShowNotificationsFromMinutesTextBox.Text = _settings.ShowNotificationsFromMinutes.ToString();
+        AutoStartPollingCheckBox.IsChecked = _settings.AutoStartPolling;
+        UseDarkModeCheckBox.IsChecked = _settings.UseDarkMode;
     }
 
     private void WireEventHandlers()
     {
         ApiKeyPasswordBox.PasswordChanged += (_, _) => OnSettingChanged();
         CompetitionTextBox.TextChanged += (_, _) => OnSettingChanged();
-        TeamComboBox.SelectionChanged += (_, _) => OnSettingChanged();
-        TeamComboBox.AddHandler(System.Windows.Controls.TextBox.TextChangedEvent, new System.Windows.Controls.TextChangedEventHandler((_, _) => OnSettingChanged()));
         KickoffCheckBox.Checked += (_, _) => OnSettingChanged();
         KickoffCheckBox.Unchecked += (_, _) => OnSettingChanged();
         GoalsCheckBox.Checked += (_, _) => OnSettingChanged();
@@ -117,6 +98,11 @@ public partial class SettingsWindow : Window
         NotificationsEnabledCheckBox.Checked += (_, _) => OnSettingChanged();
         NotificationsEnabledCheckBox.Unchecked += (_, _) => OnSettingChanged();
         PollingIntervalTextBox.TextChanged += (_, _) => OnSettingChanged();
+        ShowNotificationsFromMinutesTextBox.TextChanged += (_, _) => OnSettingChanged();
+        AutoStartPollingCheckBox.Checked += (_, _) => OnSettingChanged();
+        AutoStartPollingCheckBox.Unchecked += (_, _) => OnSettingChanged();
+        UseDarkModeCheckBox.Checked += (_, _) => OnThemeChanged();
+        UseDarkModeCheckBox.Unchecked += (_, _) => OnThemeChanged();
     }
 
     private void OnSettingChanged()
@@ -127,6 +113,17 @@ public partial class SettingsWindow : Window
         }
 
         SaveSettings();
+    }
+
+    private void OnThemeChanged()
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        SaveSettings();
+        App.SwitchTheme(UseDarkModeCheckBox.IsChecked == true);
     }
 
     private async void TestNotificationButton_Click(object sender, RoutedEventArgs e)

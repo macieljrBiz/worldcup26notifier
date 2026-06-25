@@ -1,0 +1,68 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Light Theme Color Palette -->
+
+    <!-- Primary Branding -->
+    <Color x:Key="PrimaryBrandColor">#0052CC</Color>
+    <SolidColorBrush x:Key="PrimaryBrandBrush" Color="{StaticResource PrimaryBrandColor}" />
+
+    <!-- Accents -->
+    <Color x:Key="AccentGoldColor">#FFD700</Color>
+    <SolidColorBrush x:Key="AccentGoldBrush" Color="{StaticResource AccentGoldColor}" />
+
+    <!-- Status Colors -->
+    <Color x:Key="StatusLiveColor">#EF4444</Color>
+    <SolidColorBrush x:Key="StatusLiveBrush" Color="{StaticResource StatusLiveColor}" />
+
+    <Color x:Key="StatusGoalColor">#FFD700</Color>
+    <SolidColorBrush x:Key="StatusGoalBrush" Color="{StaticResource StatusGoalColor}" />
+
+    <Color x:Key="StatusKickoffColor">#10B981</Color>
+    <SolidColorBrush x:Key="StatusKickoffBrush" Color="{StaticResource StatusKickoffColor}" />
+
+    <Color x:Key="StatusFinalColor">#0052CC</Color>
+    <SolidColorBrush x:Key="StatusFinalBrush" Color="{StaticResource StatusFinalColor}" />
+
+    <Color x:Key="StatusIdleColor">#9CA3AF</Color>
+    <SolidColorBrush x:Key="StatusIdleBrush" Color="{StaticResource StatusIdleColor}" />
+
+    <Color x:Key="StatusErrorColor">#F59E0B</Color>
+    <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusErrorColor}" />
+
+    <!-- Text Colors -->
+    <Color x:Key="PrimaryTextColor">#172033</Color>
+    <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}" />
+
+    <Color x:Key="SecondaryTextColor">#61708A</Color>
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}" />
+
+    <Color x:Key="HintTextColor">#9CA3AF</Color>
+    <SolidColorBrush x:Key="HintTextBrush" Color="{StaticResource HintTextColor}" />
+
+    <!-- Background Colors -->
+    <Color x:Key="WindowBackgroundColor">#F0F4F8</Color>
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}" />
+
+    <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}" />
+
+    <Color x:Key="CardBackgroundGlassColor">#FFFFFF</Color>
+    <SolidColorBrush x:Key="CardBackgroundGlassBrush" Color="{StaticResource CardBackgroundGlassColor}" Opacity="0.95" />
+
+    <Color x:Key="StatusBoxBackgroundColor">#F7FAFF</Color>
+    <SolidColorBrush x:Key="StatusBoxBackgroundBrush" Color="{StaticResource StatusBoxBackgroundColor}" />
+
+    <Color x:Key="FeedItemBackgroundColor">#F9FBFF</Color>
+    <SolidColorBrush x:Key="FeedItemBackgroundBrush" Color="{StaticResource FeedItemBackgroundColor}" />
+
+    <!-- Border Colors -->
+    <Color x:Key="BorderColor">#D8E0EC</Color>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+
+    <Color x:Key="BorderHighlightColor">#FFD700</Color>
+    <SolidColorBrush x:Key="BorderHighlightBrush" Color="{StaticResource BorderHighlightColor}" />
+
+    <!-- Shadow Colors -->
+    <Color x:Key="ShadowColor">#000000</Color>
+
+</ResourceDictionary>

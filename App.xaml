@@ -11,14 +11,18 @@
                 <ResourceDictionary Source="Styles/Brushes.xaml" />
                 <ResourceDictionary Source="Styles/ControlStyles.xaml" />
                 <ResourceDictionary Source="Styles/Animations.xaml" />
-                <!-- Load light theme by default -->
-                <ResourceDictionary Source="Styles/Colors_Light.xaml" />
+                <!-- Load dark theme by default -->
+                <ResourceDictionary Source="Styles/Colors_Dark.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Converters -->
             <local:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
             <local:EventTypeConverter x:Key="EventTypeConverter" />
             <local:EventTypeBackgroundConverter x:Key="EventTypeBackgroundConverter" />
+            <local:EventTypeIconImageConverter x:Key="EventTypeIconImageConverter" />
+            <local:MatchScoreConverter x:Key="MatchScoreConverter" />
+            <local:MatchStatusColorConverter x:Key="MatchStatusColorConverter" />
+            <BooleanToVisibilityConverter x:Key="BoolToVis" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

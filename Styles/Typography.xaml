@@ -3,12 +3,16 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib">
     <!-- Typography Resources -->
 
+    <!-- Font Families -->
+    <FontFamily x:Key="FontFamilyUi">Bahnschrift, Segoe UI</FontFamily>
+    <FontFamily x:Key="FontFamilyDisplay">Bahnschrift SemiBold, Segoe UI Semibold</FontFamily>
+
     <!-- Font Sizes -->
-    <sys:Double x:Key="FontSizeHeader1">34</sys:Double>
-    <sys:Double x:Key="FontSizeHeader2">24</sys:Double>
-    <sys:Double x:Key="FontSizeHeader3">22</sys:Double>
+    <sys:Double x:Key="FontSizeHeader1">36</sys:Double>
+    <sys:Double x:Key="FontSizeHeader2">26</sys:Double>
+    <sys:Double x:Key="FontSizeHeader3">21</sys:Double>
     <sys:Double x:Key="FontSizeBody">16</sys:Double>
-    <sys:Double x:Key="FontSizeLabel">13</sys:Double>
+    <sys:Double x:Key="FontSizeLabel">14</sys:Double>
     <sys:Double x:Key="FontSizeCaption">12</sys:Double>
 
     <!-- Font Weights -->

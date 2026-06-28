@@ -1,0 +1,101 @@
+<UserControl x:Class="WorldCupNotifier.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource GlassmorphismOverlayDark}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="20">
+            <!-- Title -->
+            <TextBlock Text="About" 
+                       FontSize="{StaticResource FontSizeHeader2}" 
+                       FontWeight="Bold" 
+                       Foreground="White" 
+                       Margin="0,0,0,20"/>
+
+            <!-- App Header -->
+            <Border Background="#13265A" 
+                    CornerRadius="16" 
+                    Padding="16" 
+                    BorderBrush="{StaticResource BorderBrush}" 
+                    BorderThickness="1"
+                    Effect="{StaticResource ShadowEffectSubtle}"
+                    Margin="0,0,0,16">
+                <StackPanel HorizontalAlignment="Center" Margin="0,10,0,10">
+                    <TextBlock Text="⚽" 
+                               FontSize="48" 
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,12" />
+                    <TextBlock Text="World Cup Notifier" 
+                               FontSize="{StaticResource FontSizeHeader3}" 
+                               FontWeight="Bold" 
+                               Foreground="White"
+                               HorizontalAlignment="Center" />
+                    <TextBlock Text="v1.0" 
+                               FontSize="{StaticResource FontSizeLabel}"
+                               Foreground="#C0D6FF"
+                               HorizontalAlignment="Center"
+                               Margin="0,4,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- Description -->
+                    <Border Background="#132452" 
+                    CornerRadius="16" 
+                    Padding="16" 
+                    BorderBrush="{StaticResource BorderBrush}" 
+                    BorderThickness="1"
+                    Effect="{StaticResource ShadowEffectSubtle}"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Description" 
+                               FontWeight="Bold" 
+                               Foreground="White" 
+                               Margin="0,0,0,12" />
+                    <TextBlock Text="Real-time World Cup match notifications powered by football-data.org. Receive native Windows notifications for match kickoffs, goal updates, and final results." 
+                               Foreground="#C4D7FF"
+                               TextWrapping="Wrap"
+                               LineHeight="20" />
+                </StackPanel>
+            </Border>
+
+            <!-- Features -->
+                    <Border Background="#132452" 
+                    CornerRadius="16" 
+                    Padding="16" 
+                    BorderBrush="{StaticResource BorderBrush}" 
+                    BorderThickness="1"
+                    Effect="{StaticResource ShadowEffectSubtle}"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Features" 
+                               FontWeight="Bold" 
+                               Foreground="White" 
+                               Margin="0,0,0,12" />
+                    <TextBlock Text="• Live polling with configurable intervals&#10;• Native Windows toast notifications&#10;• Dark and light theme support&#10;• Notification history tracking&#10;• Match progress indicators&#10;• Football-data.org API integration" 
+                               Foreground="#C4D7FF"
+                               TextWrapping="Wrap"
+                               LineHeight="22" />
+                </StackPanel>
+            </Border>
+
+            <!-- Technical -->
+                    <Border Background="#132452" 
+                    CornerRadius="16" 
+                    Padding="16" 
+                    BorderBrush="{StaticResource BorderBrush}" 
+                    BorderThickness="1"
+                    Effect="{StaticResource ShadowEffectSubtle}"
+                    Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="Technical Details" 
+                               FontWeight="Bold" 
+                               Foreground="White" 
+                               Margin="0,0,0,12" />
+                    <TextBlock Text="Platform: Windows 10+ (WPF)&#10;Runtime: .NET 8.0&#10;License: MIT" 
+                               Foreground="#C4D7FF"
+                               TextWrapping="Wrap"
+                               LineHeight="22" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

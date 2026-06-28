@@ -2,68 +2,103 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Gradient and Effect Resources -->
 
-    <!-- Header Gradient (Gold to Blue) -->
+    <!-- Image Sources -->
+    <BitmapImage x:Key="HeroBackgroundImage" UriSource="pack://application:,,,/Assets/Images/Backgrounds/hero_bg_cinematic.png" />
+    <BitmapImage x:Key="HeroOrbsOverlayImage" UriSource="pack://application:,,,/Assets/Images/Overlays/hero_orbs_overlay.png" />
+    <BitmapImage x:Key="ShellPanelTextureImage" UriSource="pack://application:,,,/Assets/Images/Backgrounds/shell_panel_texture_dark.png" />
+    <BitmapImage x:Key="CardSurfaceTextureImage" UriSource="pack://application:,,,/Assets/Images/Cards/card_surface_glass_blue.png" />
+
+    <BitmapImage x:Key="ChipLiveImage" UriSource="pack://application:,,,/Assets/Images/Chips/chip_live_bg.png" />
+    <BitmapImage x:Key="ChipUpcomingImage" UriSource="pack://application:,,,/Assets/Images/Chips/chip_upcoming_bg.png" />
+    <BitmapImage x:Key="ChipFinishedImage" UriSource="pack://application:,,,/Assets/Images/Chips/chip_finished_bg.png" />
+
+    <BitmapImage x:Key="FeedLiveCardImage" UriSource="pack://application:,,,/Assets/Images/Feed/feed_card_live_bg.png" />
+    <BitmapImage x:Key="FeedResultCardImage" UriSource="pack://application:,,,/Assets/Images/Feed/feed_card_final_bg.png" />
+
+    <BitmapImage x:Key="NavIconDashboardImage" UriSource="pack://application:,,,/Assets/Images/Icons/Nav/nav_icon_dashboard.png" />
+    <BitmapImage x:Key="NavIconNotificationsImage" UriSource="pack://application:,,,/Assets/Images/Icons/Nav/nav_icon_notifications.png" />
+    <BitmapImage x:Key="NavIconMatchesImage" UriSource="pack://application:,,,/Assets/Images/Icons/Nav/nav_icon_matches.png" />
+    <BitmapImage x:Key="NavIconSettingsImage" UriSource="pack://application:,,,/Assets/Images/Icons/Nav/nav_icon_settings.png" />
+    <BitmapImage x:Key="NavIconAboutImage" UriSource="pack://application:,,,/Assets/Images/Icons/Nav/nav_icon_about.png" />
+
+    <BitmapImage x:Key="PrimaryButtonIdleImage" UriSource="pack://application:,,,/Assets/Images/Buttons/button_primary_idle.png" />
+    <BitmapImage x:Key="PrimaryButtonHoverImage" UriSource="pack://application:,,,/Assets/Images/Buttons/button_primary_hover.png" />
+    <BitmapImage x:Key="PrimaryButtonPressedImage" UriSource="pack://application:,,,/Assets/Images/Buttons/button_primary_pressed.png" />
+
+    <!-- Image-backed Brushes -->
+    <ImageBrush x:Key="HeaderHeroBackgroundBrush" ImageSource="{StaticResource HeroBackgroundImage}" Stretch="Fill" />
+    <ImageBrush x:Key="ShellPanelTextureBrush" ImageSource="{StaticResource ShellPanelTextureImage}" Stretch="UniformToFill" />
+    <ImageBrush x:Key="CardSurfaceTextureBrush" ImageSource="{StaticResource CardSurfaceTextureImage}" Stretch="UniformToFill" />
+
+    <ImageBrush x:Key="ChipLiveBrush" ImageSource="{StaticResource ChipLiveImage}" Stretch="Fill" />
+    <ImageBrush x:Key="ChipUpcomingBrush" ImageSource="{StaticResource ChipUpcomingImage}" Stretch="Fill" />
+    <ImageBrush x:Key="ChipFinishedBrush" ImageSource="{StaticResource ChipFinishedImage}" Stretch="Fill" />
+
+    <ImageBrush x:Key="FeedEventLiveBrush" ImageSource="{StaticResource FeedLiveCardImage}" Stretch="Fill" />
+    <ImageBrush x:Key="FeedEventResultBrush" ImageSource="{StaticResource FeedResultCardImage}" Stretch="Fill" />
+
+    <!-- Header Gradient (electric blue sweep) -->
     <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
-        <GradientStop Color="#FFD700" Offset="0" />
-        <GradientStop Color="#0052CC" Offset="1" />
+        <GradientStop Color="#173D92" Offset="0" />
+        <GradientStop Color="#00C2FF" Offset="1" />
     </LinearGradientBrush>
 
     <!-- Match Card Gradient Template (dynamic in code-behind) -->
     <LinearGradientBrush x:Key="MatchCardGradientDefault" StartPoint="0,0" EndPoint="1,0">
-        <GradientStop Color="#FFD70080" Offset="0" />
-        <GradientStop Color="#0052CC80" Offset="1" />
+        <GradientStop Color="#00C2FF4D" Offset="0" />
+        <GradientStop Color="#7A5CFF4D" Offset="1" />
     </LinearGradientBrush>
 
     <!-- Event-Based Gradient Brushes -->
     <LinearGradientBrush x:Key="KickoffEventGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#10B98110" Offset="0" />
-        <GradientStop Color="#10B98105" Offset="1" />
+        <GradientStop Color="#38E4A530" Offset="0" />
+        <GradientStop Color="#38E4A510" Offset="1" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="GoalEventGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#FFD70015" Offset="0" />
-        <GradientStop Color="#FFD70008" Offset="1" />
+        <GradientStop Color="#FFBE3B33" Offset="0" />
+        <GradientStop Color="#FFBE3B12" Offset="1" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="ResultEventGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#0052CC15" Offset="0" />
-        <GradientStop Color="#0052CC08" Offset="1" />
+        <GradientStop Color="#52A8FF30" Offset="0" />
+        <GradientStop Color="#52A8FF10" Offset="1" />
     </LinearGradientBrush>
 
     <LinearGradientBrush x:Key="InfoEventGradient" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#9CA3AF10" Offset="0" />
-        <GradientStop Color="#9CA3AF05" Offset="1" />
+        <GradientStop Color="#8BA2DD26" Offset="0" />
+        <GradientStop Color="#8BA2DD0D" Offset="1" />
     </LinearGradientBrush>
 
     <!-- Glassmorphism Background Overlay (light) -->
     <LinearGradientBrush x:Key="GlassmorphismOverlayLight" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#FFFFFF" Offset="0" />
-        <GradientStop Color="#F9FBFF" Offset="1" />
+        <GradientStop Color="#ECF5FF" Offset="1" />
     </LinearGradientBrush>
 
     <!-- Glassmorphism Background Overlay (dark) -->
     <LinearGradientBrush x:Key="GlassmorphismOverlayDark" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#2a2a3e" Offset="0" />
-        <GradientStop Color="#1e1e2e" Offset="1" />
+        <GradientStop Color="#131C3D" Offset="0" />
+        <GradientStop Color="#091129" Offset="1" />
     </LinearGradientBrush>
 
     <!-- Shadow Effect -->
     <DropShadowEffect x:Key="ShadowEffectSubtle" 
-                      BlurRadius="8" 
+                      BlurRadius="12" 
                       ShadowDepth="2" 
-                      Opacity="0.1" 
+                      Opacity="0.22" 
                       Color="#000000" />
 
     <DropShadowEffect x:Key="ShadowEffectMedium" 
-                      BlurRadius="12" 
-                      ShadowDepth="4" 
-                      Opacity="0.15" 
+                      BlurRadius="20" 
+                      ShadowDepth="6" 
+                      Opacity="0.32" 
                       Color="#000000" />
 
     <DropShadowEffect x:Key="ShadowEffectStrong" 
-                      BlurRadius="16" 
-                      ShadowDepth="6" 
-                      Opacity="0.2" 
+                      BlurRadius="30" 
+                      ShadowDepth="10" 
+                      Opacity="0.4" 
                       Color="#000000" />
 
 </ResourceDictionary>

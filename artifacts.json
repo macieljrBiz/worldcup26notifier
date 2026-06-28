@@ -1,0 +1,160 @@
+{
+  "styleGuide": {
+    "description": "Dark futuristic football control-room style, electric cyan and deep navy palette, clean high-contrast UI art, no text/logos/branding, cinematic lighting, subtle grain, soft bloom, crisp edges, suitable for desktop app UI composition.",
+    "globalPromptHints": [
+      "Use consistent visual language across all assets.",
+      "Avoid text in all generated images.",
+      "Use transparent backgrounds for icons and overlays.",
+      "Keep icon stroke weight and perspective consistent."
+    ]
+  },
+  "assets": [
+    {
+      "priority": "High",
+      "filename": "hero_bg_cinematic.png",
+      "destinationDirectory": "Assets/Images/Backgrounds",
+      "suggestedSizeFormat": "1920x420 PNG",
+      "prompt": "Wide futuristic sports dashboard banner background, deep navy to electric cyan gradient, soft circular light blooms, subtle atmospheric haze, clean modern esports control-room mood, high contrast, no text, no logos, no characters, no watermark"
+    },
+    {
+      "priority": "High",
+      "filename": "hero_orbs_overlay.png",
+      "destinationDirectory": "Assets/Images/Overlays",
+      "suggestedSizeFormat": "1920x420 PNG with transparency",
+      "prompt": "Transparent overlay with 3 to 5 soft cyan/blue glowing circles of different sizes, feathered edges, very subtle noise, designed to sit on top of dark gradient banner, no text, no logos"
+    },
+    {
+      "priority": "High",
+      "filename": "shell_panel_texture_dark.png",
+      "destinationDirectory": "Assets/Images/Backgrounds",
+      "suggestedSizeFormat": "1024x1024 PNG tileable",
+      "prompt": "Tileable dark UI panel texture, deep navy with subtle brushed micro-noise and faint vignette, minimal patterning, premium game interface material, seamless edges"
+    },
+    {
+      "priority": "High",
+      "filename": "card_surface_glass_blue.png",
+      "destinationDirectory": "Assets/Images/Cards",
+      "suggestedSizeFormat": "1024x1024 PNG tileable",
+      "prompt": "Tileable dark blue glass-like card surface, soft inner glow, gentle top highlight, subtle edge depth, futuristic control-panel style, seamless texture, no artifacts"
+    },
+    {
+      "priority": "High",
+      "filename": "feed_card_live_bg.png",
+      "destinationDirectory": "Assets/Images/Feed",
+      "suggestedSizeFormat": "1200x320 PNG",
+      "prompt": "Horizontal event card background for live state, dark blue base with green-cyan accent glow strip, readable for white text overlay, subtle gradient and soft shadow depth, no text"
+    },
+    {
+      "priority": "High",
+      "filename": "feed_card_final_bg.png",
+      "destinationDirectory": "Assets/Images/Feed",
+      "suggestedSizeFormat": "1200x320 PNG",
+      "prompt": "Horizontal event card background for final/result state, dark blue base with cool cyan accent and faint metallic depth, readable for white text overlay, no text"
+    },
+    {
+      "priority": "Medium",
+      "filename": "chip_live_bg.png",
+      "destinationDirectory": "Assets/Images/Chips",
+      "suggestedSizeFormat": "320x120 PNG",
+      "prompt": "Rounded chip background for status badge live, dark emerald to teal gradient, subtle outer glow, glossy top highlight, no text"
+    },
+    {
+      "priority": "Medium",
+      "filename": "chip_upcoming_bg.png",
+      "destinationDirectory": "Assets/Images/Chips",
+      "suggestedSizeFormat": "320x120 PNG",
+      "prompt": "Rounded chip background for status badge upcoming, deep blue to cyan gradient, subtle glow, clean sharp edges, no text"
+    },
+    {
+      "priority": "Medium",
+      "filename": "chip_finished_bg.png",
+      "destinationDirectory": "Assets/Images/Chips",
+      "suggestedSizeFormat": "320x120 PNG",
+      "prompt": "Rounded chip background for status badge finished, muted slate-blue gradient, low glow, premium UI badge style, no text"
+    },
+    {
+      "priority": "High",
+      "filename": "nav_icon_dashboard.png",
+      "destinationDirectory": "Assets/Images/Icons/Nav",
+      "suggestedSizeFormat": "64x64 PNG transparent",
+      "prompt": "Minimal line icon for dashboard/overview, futuristic sports app iconography, white or very light cyan stroke, centered, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "nav_icon_notifications.png",
+      "destinationDirectory": "Assets/Images/Icons/Nav",
+      "suggestedSizeFormat": "64x64 PNG transparent",
+      "prompt": "Minimal line bell icon for notifications, same visual family as dashboard icon, light stroke, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "nav_icon_matches.png",
+      "destinationDirectory": "Assets/Images/Icons/Nav",
+      "suggestedSizeFormat": "64x64 PNG transparent",
+      "prompt": "Minimal line football match icon (ball plus fixture cue), consistent stroke with nav icon set, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "nav_icon_settings.png",
+      "destinationDirectory": "Assets/Images/Icons/Nav",
+      "suggestedSizeFormat": "64x64 PNG transparent",
+      "prompt": "Minimal line gear icon for settings, same family, transparent background"
+    },
+    {
+      "priority": "Medium",
+      "filename": "nav_icon_about.png",
+      "destinationDirectory": "Assets/Images/Icons/Nav",
+      "suggestedSizeFormat": "64x64 PNG transparent",
+      "prompt": "Minimal line info/about icon, same visual language, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "event_icon_info.png",
+      "destinationDirectory": "Assets/Images/Icons/Events",
+      "suggestedSizeFormat": "48x48 PNG transparent",
+      "prompt": "Bold compact info symbol icon for event feed row, clean vector-like style, light foreground, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "event_icon_goal.png",
+      "destinationDirectory": "Assets/Images/Icons/Events",
+      "suggestedSizeFormat": "48x48 PNG transparent",
+      "prompt": "Compact goal event icon (football plus burst accent), high legibility at small size, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "event_icon_kickoff.png",
+      "destinationDirectory": "Assets/Images/Icons/Events",
+      "suggestedSizeFormat": "48x48 PNG transparent",
+      "prompt": "Compact kickoff icon (whistle or play-start motif), same family as other event icons, transparent background"
+    },
+    {
+      "priority": "High",
+      "filename": "event_icon_final.png",
+      "destinationDirectory": "Assets/Images/Icons/Events",
+      "suggestedSizeFormat": "48x48 PNG transparent",
+      "prompt": "Compact final result icon (checkered finish motif), same family and stroke weight, transparent background"
+    },
+    {
+      "priority": "Medium",
+      "filename": "button_primary_idle.png",
+      "destinationDirectory": "Assets/Images/Buttons",
+      "suggestedSizeFormat": "420x120 PNG",
+      "prompt": "Rounded rectangular primary button background, cyan-blue gradient, subtle bevel and glow, premium game UI style, no text"
+    },
+    {
+      "priority": "Medium",
+      "filename": "button_primary_hover.png",
+      "destinationDirectory": "Assets/Images/Buttons",
+      "suggestedSizeFormat": "420x120 PNG",
+      "prompt": "Same button as idle but brighter cyan glow and slightly stronger top highlight, no text"
+    },
+    {
+      "priority": "Medium",
+      "filename": "button_primary_pressed.png",
+      "destinationDirectory": "Assets/Images/Buttons",
+      "suggestedSizeFormat": "420x120 PNG",
+      "prompt": "Same primary button with darker pressed depth, reduced glow, slight inner shadow, no text"
+    }
+  ]
+}

@@ -3,63 +3,63 @@
     <!-- Dark Theme Color Palette -->
 
     <!-- Primary Branding -->
-    <Color x:Key="PrimaryBrandColor">#0052CC</Color>
+    <Color x:Key="PrimaryBrandColor">#00C2FF</Color>
     <SolidColorBrush x:Key="PrimaryBrandBrush" Color="{StaticResource PrimaryBrandColor}" />
 
     <!-- Accents (vibrant, same as light) -->
-    <Color x:Key="AccentGoldColor">#FFD700</Color>
+    <Color x:Key="AccentGoldColor">#FFD447</Color>
     <SolidColorBrush x:Key="AccentGoldBrush" Color="{StaticResource AccentGoldColor}" />
 
     <!-- Status Colors (same as light) -->
-    <Color x:Key="StatusLiveColor">#EF4444</Color>
+    <Color x:Key="StatusLiveColor">#FF5F8A</Color>
     <SolidColorBrush x:Key="StatusLiveBrush" Color="{StaticResource StatusLiveColor}" />
 
-    <Color x:Key="StatusGoalColor">#FFD700</Color>
+    <Color x:Key="StatusGoalColor">#FFBE3B</Color>
     <SolidColorBrush x:Key="StatusGoalBrush" Color="{StaticResource StatusGoalColor}" />
 
-    <Color x:Key="StatusKickoffColor">#10B981</Color>
+    <Color x:Key="StatusKickoffColor">#38E4A5</Color>
     <SolidColorBrush x:Key="StatusKickoffBrush" Color="{StaticResource StatusKickoffColor}" />
 
-    <Color x:Key="StatusFinalColor">#0052CC</Color>
+    <Color x:Key="StatusFinalColor">#52A8FF</Color>
     <SolidColorBrush x:Key="StatusFinalBrush" Color="{StaticResource StatusFinalColor}" />
 
-    <Color x:Key="StatusIdleColor">#6B7280</Color>
+    <Color x:Key="StatusIdleColor">#7284B0</Color>
     <SolidColorBrush x:Key="StatusIdleBrush" Color="{StaticResource StatusIdleColor}" />
 
-    <Color x:Key="StatusErrorColor">#F59E0B</Color>
+    <Color x:Key="StatusErrorColor">#FF8A3D</Color>
     <SolidColorBrush x:Key="StatusErrorBrush" Color="{StaticResource StatusErrorColor}" />
 
     <!-- Text Colors (inverted for dark) -->
-    <Color x:Key="PrimaryTextColor">#E0E0E0</Color>
+    <Color x:Key="PrimaryTextColor">#EEF5FF</Color>
     <SolidColorBrush x:Key="PrimaryTextBrush" Color="{StaticResource PrimaryTextColor}" />
 
-    <Color x:Key="SecondaryTextColor">#B0B8C8</Color>
+    <Color x:Key="SecondaryTextColor">#AFC0E7</Color>
     <SolidColorBrush x:Key="SecondaryTextBrush" Color="{StaticResource SecondaryTextColor}" />
 
-    <Color x:Key="HintTextColor">#7A8596</Color>
+    <Color x:Key="HintTextColor">#7E8FB6</Color>
     <SolidColorBrush x:Key="HintTextBrush" Color="{StaticResource HintTextColor}" />
 
     <!-- Background Colors (dark) -->
-    <Color x:Key="WindowBackgroundColor">#1e1e2e</Color>
+    <Color x:Key="WindowBackgroundColor">#0A1128</Color>
     <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}" />
 
-    <Color x:Key="CardBackgroundColor">#2a2a3e</Color>
+    <Color x:Key="CardBackgroundColor">#121B38</Color>
     <SolidColorBrush x:Key="CardBackgroundBrush" Color="{StaticResource CardBackgroundColor}" />
 
-    <Color x:Key="CardBackgroundGlassColor">#2a2a3e</Color>
+    <Color x:Key="CardBackgroundGlassColor">#17224A</Color>
     <SolidColorBrush x:Key="CardBackgroundGlassBrush" Color="{StaticResource CardBackgroundGlassColor}" Opacity="0.95" />
 
-    <Color x:Key="StatusBoxBackgroundColor">#323648</Color>
+    <Color x:Key="StatusBoxBackgroundColor">#162856</Color>
     <SolidColorBrush x:Key="StatusBoxBackgroundBrush" Color="{StaticResource StatusBoxBackgroundColor}" />
 
-    <Color x:Key="FeedItemBackgroundColor">#2d2d40</Color>
+    <Color x:Key="FeedItemBackgroundColor">#1A2850</Color>
     <SolidColorBrush x:Key="FeedItemBackgroundBrush" Color="{StaticResource FeedItemBackgroundColor}" />
 
     <!-- Border Colors -->
-    <Color x:Key="BorderColor">#4A5568</Color>
+    <Color x:Key="BorderColor">#2C427B</Color>
     <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
 
-    <Color x:Key="BorderHighlightColor">#FFD700</Color>
+    <Color x:Key="BorderHighlightColor">#00D9FF</Color>
     <SolidColorBrush x:Key="BorderHighlightBrush" Color="{StaticResource BorderHighlightColor}" />
 
     <!-- Shadow Colors -->

@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Text.Json;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace WorldCupNotifier;
 
@@ -9,16 +11,19 @@ namespace WorldCupNotifier;
 /// </summary>
 public partial class App : Application
 {
+    public static string? StartupNotificationInitializationError { get; private set; }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
         try
         {
             DesktopNotificationService.Initialize();
+            StartupNotificationInitializationError = null;
         }
-        catch
+        catch (Exception ex)
         {
-            // Notification registration is retried when the user sends a test notification.
+            StartupNotificationInitializationError = ex.Message;
         }
 
         // Load theme preference on startup
@@ -78,7 +83,7 @@ public sealed class AppSettings
     public int PollingIntervalSeconds { get; set; } = 70;
     public int ShowNotificationsFromMinutes { get; set; } = 5;
     public bool AutoStartPolling { get; set; } = true;
-    public bool UseDarkMode { get; set; } = false;
+        public bool UseDarkMode { get; set; } = true;
 }
 
 public sealed class NullToVisibilityConverter : System.Windows.Data.IValueConverter
@@ -127,10 +132,98 @@ public sealed class EventTypeBackgroundConverter : System.Windows.Data.IValueCon
 
         return eventType switch
         {
-            "Kickoff" => Application.Current.Resources["KickoffEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
-            "Goal" => Application.Current.Resources["GoalEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
-            "Result" => Application.Current.Resources["ResultEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
+            "Kickoff" => Application.Current.Resources["FeedEventLiveBrush"] ?? Application.Current.Resources["KickoffEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
+            "Goal" => Application.Current.Resources["FeedEventLiveBrush"] ?? Application.Current.Resources["GoalEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
+            "Result" => Application.Current.Resources["FeedEventResultBrush"] ?? Application.Current.Resources["ResultEventGradient"] ?? System.Windows.Media.Brushes.Transparent,
             _ => Application.Current.Resources["InfoEventGradient"] ?? System.Windows.Media.Brushes.Transparent
+        };
+    }
+
+    public object ConvertBack(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public sealed class EventTypeIconImageConverter : System.Windows.Data.IValueConverter
+{
+    private static readonly Dictionary<string, ImageSource> IconCache = new(StringComparer.OrdinalIgnoreCase);
+
+    public object Convert(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        var eventType = value as string ?? "Info";
+
+        if (IconCache.TryGetValue(eventType, out var cached))
+        {
+            return cached;
+        }
+
+        var path = eventType switch
+        {
+            "Kickoff" => "pack://application:,,,/Assets/Images/Icons/Events/event_icon_kickoff.png",
+            "Goal" => "pack://application:,,,/Assets/Images/Icons/Events/event_icon_goal.png",
+            "Result" => "pack://application:,,,/Assets/Images/Icons/Events/event_icon_final.png",
+            _ => "pack://application:,,,/Assets/Images/Icons/Events/event_icon_info.png"
+        };
+
+        try
+        {
+            var bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.UriSource = new Uri(path, UriKind.Absolute);
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.EndInit();
+            bitmap.Freeze();
+            IconCache[eventType] = bitmap;
+            return bitmap;
+        }
+        catch
+        {
+            return null!;
+        }
+    }
+
+    public object ConvertBack(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+// Converts a Match's Score object to a display string like "2 – 1" or "– –" when not started
+public sealed class MatchScoreConverter : System.Windows.Data.IValueConverter
+{
+    public object Convert(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        if (value is not Score score)
+            return "– –";
+
+        var part = score.FullTime ?? score.RegularTime ?? score.HalfTime;
+        if (part?.Home == null || part?.Away == null)
+            return "– –";
+
+        return $"{part.Home} – {part.Away}";
+    }
+
+    public object ConvertBack(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+// Converts match Status string to a brush for the status badge background
+public sealed class MatchStatusColorConverter : System.Windows.Data.IValueConverter
+{
+    public object Convert(object? value, System.Type targetType, object? parameter, System.Globalization.CultureInfo? culture)
+    {
+        if (value is not string status)
+            return Application.Current.Resources["PrimaryBrandBrush"] ?? System.Windows.Media.Brushes.Blue;
+
+        return status switch
+        {
+            "IN_PLAY" or "PAUSED" => Application.Current.Resources["StatusKickoffBrush"] ?? System.Windows.Media.Brushes.Green,
+            "FINISHED" or "AWARDED" => Application.Current.Resources["StatusIdleBrush"] ?? System.Windows.Media.Brushes.Gray,
+            "POSTPONED" or "CANCELLED" or "SUSPENDED" => Application.Current.Resources["StatusLiveBrush"] ?? System.Windows.Media.Brushes.OrangeRed,
+            _ => Application.Current.Resources["PrimaryBrandBrush"] ?? System.Windows.Media.Brushes.Blue
         };
     }
 

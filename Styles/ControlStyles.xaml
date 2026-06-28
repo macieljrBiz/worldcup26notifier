@@ -2,11 +2,20 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Control Styles and Templates -->
 
+    <Style TargetType="Window">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyUi}" />
+    </Style>
+
+    <Style TargetType="UserControl">
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyUi}" />
+    </Style>
+
     <!-- TextBlock Styles -->
     <Style x:Key="TextBlockHeading1" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{StaticResource FontSizeHeader1}" />
         <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyDisplay}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
@@ -14,12 +23,14 @@
         <Setter Property="FontSize" Value="{StaticResource FontSizeHeader2}" />
         <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyDisplay}" />
     </Style>
 
     <Style x:Key="TextBlockHeading3" TargetType="TextBlock">
         <Setter Property="FontSize" Value="{StaticResource FontSizeHeader3}" />
         <Setter Property="FontWeight" Value="{StaticResource FontWeightBold}" />
         <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+        <Setter Property="FontFamily" Value="{StaticResource FontFamilyDisplay}" />
     </Style>
 
     <Style x:Key="TextBlockBody" TargetType="TextBlock">
@@ -51,20 +62,64 @@
     <Style x:Key="ButtonPrimary" TargetType="Button">
         <Setter Property="Padding" Value="14,8" />
         <Setter Property="Margin" Value="{StaticResource MarginButtonSmall}" />
-        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
-        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
+        <Setter Property="Foreground" Value="#ECF5FF" />
+        <Setter Property="Background" Value="#1D427B" />
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style x:Key="ButtonSecondary" TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
-        <Setter Property="Background" Value="{StaticResource StatusBoxBackgroundBrush}" />
+        <Setter Property="Background" Value="#263A70" />
+        <Setter Property="Foreground" Value="#DDEBFF" />
+    </Style>
+
+    <Style x:Key="ImagePrimaryButton" TargetType="Button" BasedOn="{StaticResource ButtonPrimary}">
+        <Setter Property="Foreground" Value="#ECF5FF" />
+        <Setter Property="BorderBrush" Value="#3D67A9" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{StaticResource PrimaryButtonIdleImage}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonChrome"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="8"
+                            SnapsToDevicePixels="True">
+                        <Grid>
+                            <Rectangle>
+                                <Rectangle.Fill>
+                                    <ImageBrush ImageSource="{StaticResource PrimaryButtonIdleImage}" Stretch="Fill" />
+                                </Rectangle.Fill>
+                            </Rectangle>
+                            <Rectangle Fill="#50233F72" />
+                            <ContentPresenter Margin="{TemplateBinding Padding}"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"
+                                              RecognizesAccessKey="True" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.95" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.88" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.55" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <!-- Border Styles for Cards -->
     <Style x:Key="CardBorder" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
+        <Setter Property="Background" Value="#132452" />
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="{StaticResource CornerRadiusMedium}" />
@@ -93,6 +148,97 @@
         <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FontSize" Value="{StaticResource FontSizeBody}" />
+    </Style>
+
+    <!-- Global ScrollBar Styles -->
+    <Style x:Key="AppScrollThumbStyle" TargetType="Thumb">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border x:Name="ThumbChrome"
+                            CornerRadius="6"
+                            Background="#A81FC5FF"
+                            BorderBrush="#CC8FF0FF"
+                            BorderThickness="1" />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ThumbChrome" Property="Background" Value="#CC3ED4FF" />
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="ThumbChrome" Property="Background" Value="#E047D8FF" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <ControlTemplate x:Key="AppVerticalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Background="Transparent" Width="12" Margin="2,2,0,2">
+            <Border Width="8"
+                    HorizontalAlignment="Center"
+                    CornerRadius="5"
+                    Background="#2E1A4278"
+                    BorderBrush="#66356DAB"
+                    BorderThickness="1" />
+            <Track x:Name="PART_Track"
+                   IsDirectionReversed="True"
+                   Focusable="False">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageUpCommand"
+                                  Background="Transparent"
+                                  BorderThickness="0" />
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource AppScrollThumbStyle}" />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageDownCommand"
+                                  Background="Transparent"
+                                  BorderThickness="0" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
+
+    <ControlTemplate x:Key="AppHorizontalScrollBarTemplate" TargetType="ScrollBar">
+        <Grid Background="Transparent" Height="12" Margin="2,0,2,2">
+            <Border Height="8"
+                    VerticalAlignment="Center"
+                    CornerRadius="5"
+                    Background="#2E1A4278"
+                    BorderBrush="#66356DAB"
+                    BorderThickness="1" />
+            <Track x:Name="PART_Track"
+                   IsDirectionReversed="False"
+                   Focusable="False">
+                <Track.DecreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageLeftCommand"
+                                  Background="Transparent"
+                                  BorderThickness="0" />
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                    <Thumb Style="{StaticResource AppScrollThumbStyle}" />
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                    <RepeatButton Command="ScrollBar.PageRightCommand"
+                                  Background="Transparent"
+                                  BorderThickness="0" />
+                </Track.IncreaseRepeatButton>
+            </Track>
+        </Grid>
+    </ControlTemplate>
+
+    <Style TargetType="ScrollBar">
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template" Value="{StaticResource AppVerticalScrollBarTemplate}" />
+        <Style.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+                <Setter Property="Height" Value="12" />
+                <Setter Property="Template" Value="{StaticResource AppHorizontalScrollBarTemplate}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

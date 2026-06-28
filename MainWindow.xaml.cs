@@ -9,11 +9,21 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using System.Diagnostics;
 
 namespace WorldCupNotifier;
 
 public partial class MainWindow : Window
 {
+    private enum ViewType
+    {
+        Dashboard,
+        Notifications,
+        Matches,
+        Settings,
+        About
+    }
+
     private static readonly string[] FallbackTeams =
     [
         "Argentina", "Australia", "Belgium", "Brazil", "Cameroon", "Canada", "Costa Rica", "Croatia",
@@ -24,12 +34,22 @@ public partial class MainWindow : Window
 
     private static readonly HttpClient HttpClient = new();
     private readonly ObservableCollection<AlertItem> _feed = [];
+    private readonly ObservableCollection<Match> _matches = [];
     private readonly Dictionary<int, MatchSnapshot> _snapshots = [];
     private readonly HashSet<string> _sentEventIds = [];
     private readonly DispatcherTimer _pollTimer = new();
     private readonly string _settingsPath;
     private AppSettings _settings = new();
-    private SettingsWindow? _settingsWindow;
+    private ViewType _currentView = ViewType.Dashboard;
+    private readonly DashboardView _dashboardView = new();
+    private readonly NotificationsView _notificationsView = new();
+    private readonly MatchesView _matchesView = new();
+    private readonly SettingsView _settingsView = new();
+    private readonly AboutView _aboutView = new();
+    private System.Windows.Forms.NotifyIcon? _notifyIcon;
+    private bool _isSwitchingView;
+    private bool _isCheckingLiveData;
+    private string? _lastPersistentIssueKey;
 
     public MainWindow()
     {
@@ -40,15 +60,69 @@ public partial class MainWindow : Window
             "WorldCupNotifier",
             "settings.json");
 
-        FeedListBox.ItemsSource = _feed;
-        _pollTimer.Tick += async (_, _) => await CheckLiveDataAsync();
+        _pollTimer.Tick += PollTimer_Tick;
 
         LoadSettings();
         UpdatePollingInterval();
-        UpdateFeedSummary();
-        
-        Loaded += async (_, _) => await MainWindow_LoadedAsync();
+        InitializeTrayIcon();
+
+        Loaded += MainWindow_LoadedAsync;
         Loaded += MainWindow_Loaded_WireAnimations;
+    }
+
+    private async void PollTimer_Tick(object? sender, EventArgs e)
+    {
+        await TriggerLiveCheckAsync("Automatic timer check", addFeedOnMissingApiKey: false);
+    }
+
+    private void InitializeTrayIcon()
+    {
+        _notifyIcon = new System.Windows.Forms.NotifyIcon
+        {
+            Icon = System.Drawing.SystemIcons.Application,
+            Text = "World Cup Notifier",
+            Visible = true
+        };
+
+        var menu = new System.Windows.Forms.ContextMenuStrip();
+        menu.Items.Add("Show", null, (_, _) => Dispatcher.Invoke(ShowFromTray));
+        menu.Items.Add(new System.Windows.Forms.ToolStripSeparator());
+        menu.Items.Add("Exit", null, (_, _) => Dispatcher.Invoke(ExitApplication));
+        _notifyIcon.ContextMenuStrip = menu;
+        _notifyIcon.DoubleClick += (_, _) => Dispatcher.Invoke(ShowFromTray);
+    }
+
+    private void ShowFromTray()
+    {
+        Show();
+        WindowState = WindowState.Normal;
+        Activate();
+    }
+
+    private void ExitApplication()
+    {
+        Close();
+    }
+
+    protected override void OnStateChanged(EventArgs e)
+    {
+        if (WindowState == WindowState.Minimized)
+        {
+            Hide();
+            _notifyIcon?.ShowBalloonTip(
+                2000,
+                "World Cup Notifier",
+                "Still polling in the background. Double-click the tray icon to restore.",
+                System.Windows.Forms.ToolTipIcon.Info);
+        }
+        base.OnStateChanged(e);
+    }
+
+    protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+    {
+        _pollTimer.Stop();
+        _notifyIcon?.Dispose();
+        base.OnClosing(e);
     }
 
     private void LoadSettings()
@@ -62,8 +136,17 @@ public partial class MainWindow : Window
         _settings = JsonSerializer.Deserialize<AppSettings>(json) ?? new AppSettings();
     }
 
-    private async Task MainWindow_LoadedAsync()
+    private async void MainWindow_LoadedAsync(object? sender, RoutedEventArgs e)
     {
+        if (!string.IsNullOrWhiteSpace(App.StartupNotificationInitializationError))
+        {
+            AddFeedItem("Notification setup warning", App.StartupNotificationInitializationError, "Info");
+            SetPersistentIssue(
+                "Notification setup warning",
+                "Native notifications may be unavailable until this is resolved. Events will still appear in-app.",
+                "notification-init-warning");
+        }
+
         if (_settings.ShowNotificationsFromMinutes > 0)
         {
             await InitializeHistoricalFeed();
@@ -72,28 +155,51 @@ public partial class MainWindow : Window
         if (_settings.AutoStartPolling)
         {
             _pollTimer.Start();
-            StartStopButton.Content = "Stop polling";
+            if (_dashboardView?.StartStopButton != null)
+            {
+                _dashboardView.StartStopButton.Content = "⏸ Stop";
+            }
             SetStatus("Polling auto-started", $"Next automatic check in {_settings.PollingIntervalSeconds} seconds.");
         }
     }
 
     private void MainWindow_Loaded_WireAnimations(object sender, RoutedEventArgs e)
     {
-        // Wire event handlers for button animations
-        CheckNowButton.MouseEnter += Button_MouseEnter;
-        CheckNowButton.MouseLeave += Button_MouseLeave;
-        
-        StartStopButton.MouseEnter += Button_MouseEnter;
-        StartStopButton.MouseLeave += Button_MouseLeave;
-        
-        if (FindName("ClearFeedButton") is Button clearButton)
-        {
-            clearButton.MouseEnter += Button_MouseEnter;
-            clearButton.MouseLeave += Button_MouseLeave;
-        }
-        
+        // Wire sidebar navigation buttons
+        DashboardNavButton.MouseEnter += Button_MouseEnter;
+        DashboardNavButton.MouseLeave += Button_MouseLeave;
+
+        NotificationsNavButton.MouseEnter += Button_MouseEnter;
+        NotificationsNavButton.MouseLeave += Button_MouseLeave;
+
+        MatchesNavButton.MouseEnter += Button_MouseEnter;
+        MatchesNavButton.MouseLeave += Button_MouseLeave;
+
+        SettingsNavButton.MouseEnter += Button_MouseEnter;
+        SettingsNavButton.MouseLeave += Button_MouseLeave;
+
+        AboutNavButton.MouseEnter += Button_MouseEnter;
+        AboutNavButton.MouseLeave += Button_MouseLeave;
+
         SettingsButton.MouseEnter += Button_MouseEnter;
         SettingsButton.MouseLeave += Button_MouseLeave;
+
+        // Initialize DashboardView with feed binding and main window reference
+        _dashboardView.SetMainWindow(this);
+        _dashboardView.FeedListBox.ItemsSource = _feed;
+        _dashboardView.FeedSummaryTextBlock.Text = _feed.Count == 0 ? "No alerts yet." : $"{_feed.Count} alert(s).";
+
+        // Initialize NotificationsView with feed reference
+        _notificationsView.SetMainWindow(this);
+
+        // Initialize MatchesView with matches reference
+        _matchesView.SetMainWindow(this);
+
+        // Initialize SettingsView with settings reference
+        _settingsView.SetMainWindow(this);
+
+        // Initialize with Dashboard view
+        SwitchView(ViewType.Dashboard);
     }
 
     private async Task InitializeHistoricalFeed()
@@ -148,6 +254,35 @@ public partial class MainWindow : Window
         SetStatus(status, detail);
     }
 
+    public ObservableCollection<AlertItem> GetFeed()
+    {
+        return _feed;
+    }
+
+    public ObservableCollection<Match> GetMatches()
+    {
+        return _matches;
+    }
+
+    public AppSettings GetSettings()
+    {
+        return _settings;
+    }
+
+    public void SaveSettings()
+    {
+        var json = JsonSerializer.Serialize(_settings, new JsonSerializerOptions { WriteIndented = true });
+        var dir = Path.GetDirectoryName(_settingsPath);
+        if (!Directory.Exists(dir))
+        {
+            Directory.CreateDirectory(dir!);
+        }
+        File.WriteAllText(_settingsPath, json);
+        
+        // Reload settings to reflect any changes
+        ReloadSettings();
+    }
+
 
 
     private void UpdatePollingInterval()
@@ -157,54 +292,204 @@ public partial class MainWindow : Window
 
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_settingsWindow == null || !_settingsWindow.IsVisible)
-        {
-            _settingsWindow = new SettingsWindow { Owner = this };
-            _settingsWindow.SetParentWindow(this);
-            _settingsWindow.ShowDialog();
-        }
-        else
-        {
-            _settingsWindow.Focus();
-        }
+        SwitchView(ViewType.Settings);
+        SettingsNavButton.Focus();
     }
 
-    private async void CheckNowButton_Click(object sender, RoutedEventArgs e)
+    public void CheckNowPublic()
+    {
+        CheckNowButton_ClickImpl();
+    }
+
+    public void StartStopPublic()
+    {
+        StartStopButton_ClickImpl();
+    }
+
+    public void ClearFeedPublic()
+    {
+        ClearFeedButton_ClickImpl();
+    }
+
+    private void CheckNowButton_ClickImpl()
     {
         ReloadSettings();
-        await CheckLiveDataAsync();
+        _ = TriggerLiveCheckAsync("Manual check");
     }
 
-    private async void StartStopButton_Click(object sender, RoutedEventArgs e)
+    private void StartStopButton_ClickImpl()
     {
         ReloadSettings();
 
         if (_pollTimer.IsEnabled)
         {
             _pollTimer.Stop();
-            StartStopButton.Content = "Start polling";
+            _dashboardView.StartStopButton.Content = "▶ Start";
             SetStatus("Polling stopped", "Live data monitoring is paused.");
             return;
         }
 
-        await CheckLiveDataAsync();
+        _ = TriggerLiveCheckAsync("Manual start");
         _pollTimer.Start();
-        StartStopButton.Content = "Stop polling";
+        _dashboardView.StartStopButton.Content = "⏸ Stop";
         SetStatus("Polling started", $"Next automatic check in {_settings.PollingIntervalSeconds} seconds.");
     }
 
-    private void ClearFeedButton_Click(object sender, RoutedEventArgs e)
+    private void ClearFeedButton_ClickImpl()
     {
         _feed.Clear();
         UpdateFeedSummary();
+    }
+
+    private void UpdateFeedSummary()
+    {
+        var summary = _feed.Count == 0 ? "No alerts yet." : $"{_feed.Count} alert(s).";
+        if (_dashboardView != null)
+        {
+            _dashboardView.FeedSummaryTextBlock.Text = summary;
+        }
+    }
+
+    private void NavButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button button && button.Tag is string viewName)
+        {
+            if (Enum.TryParse<ViewType>(viewName, out var viewType))
+            {
+                if (viewType == ViewType.Settings)
+                {
+                    SwitchView(viewType);
+                }
+                else
+                {
+                    SwitchView(viewType);
+                }
+            }
+        }
+    }
+
+    private void SwitchView(ViewType viewType)
+    {
+        _ = SwitchViewAsync(viewType);
+    }
+
+    private async Task SwitchViewAsync(ViewType viewType)
+    {
+        if (_isSwitchingView)
+        {
+            return;
+        }
+
+        _isSwitchingView = true;
+
+        try
+        {
+            _currentView = viewType;
+
+            // Update button styles (active button in primary color, others in border color)
+            Dispatcher.Invoke(UpdateNavButtonStyles);
+
+            // Initialize view if first time
+            if (viewType == ViewType.Notifications && _notificationsView.FindName("NotificationsListBox") != null)
+            {
+                _notificationsView.SetMainWindow(this);
+            }
+
+            // Fade out current content
+            if (ContentControl.Content != null)
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    if (TryFindResource("ViewFadeOut") is Storyboard fadeOutStoryboard)
+                    {
+                        fadeOutStoryboard.Begin(ContentControl);
+                    }
+                });
+
+                await Task.Delay(150);
+            }
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                ContentControl.Content = viewType switch
+                {
+                    ViewType.Dashboard => _dashboardView,
+                    ViewType.Notifications => _notificationsView,
+                    ViewType.Matches => _matchesView,
+                    ViewType.Settings => _settingsView,
+                    ViewType.About => _aboutView,
+                    _ => _dashboardView
+                };
+            });
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                if (TryFindResource("ViewFadeIn") is Storyboard fadeInStoryboard)
+                {
+                    fadeInStoryboard.Begin(ContentControl);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"View switch failed: {ex}");
+            await Dispatcher.InvokeAsync(() =>
+            {
+                ContentControl.Content = _dashboardView;
+                _currentView = ViewType.Dashboard;
+                UpdateNavButtonStyles();
+            });
+        }
+        finally
+        {
+            _isSwitchingView = false;
+        }
+    }
+
+    private void UpdateNavButtonStyles()
+    {
+        var brushConverter = new BrushConverter();
+        var primaryColor = (Brush)(brushConverter.ConvertFromString("#1FC5FF") ?? Brushes.DeepSkyBlue);
+        var secondaryColor = (Brush)(brushConverter.ConvertFromString("#213A72") ?? Brushes.SteelBlue);
+        var primaryText = (Brush)(brushConverter.ConvertFromString("#EAF2FF") ?? Brushes.WhiteSmoke);
+        var whiteText = Brushes.White;
+
+        var buttons = new[]
+        {
+            (DashboardNavButton, ViewType.Dashboard),
+            (NotificationsNavButton, ViewType.Notifications),
+            (MatchesNavButton, ViewType.Matches),
+            (SettingsNavButton, ViewType.Settings),
+            (AboutNavButton, ViewType.About)
+        };
+
+        foreach (var (button, viewType) in buttons)
+        {
+            if (viewType == _currentView)
+            {
+                button.Background = primaryColor;
+                button.Foreground = whiteText;
+                button.BorderBrush = (Brush)(brushConverter.ConvertFromString("#7DE4FF") ?? Brushes.LightBlue);
+                button.BorderThickness = new Thickness(1);
+            }
+            else
+            {
+                button.Background = secondaryColor;
+                button.Foreground = primaryText;
+                button.BorderBrush = (Brush)(brushConverter.ConvertFromString("#2E4C8A") ?? Brushes.SlateBlue);
+                button.BorderThickness = new Thickness(1);
+            }
+        }
     }
 
     private void Button_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
     {
         if (sender is Button button)
         {
-            var storyboard = (Storyboard)Resources["ButtonHoverScale"];
-            storyboard?.Begin(button);
+            if (TryFindResource("ButtonHoverScale") is Storyboard storyboard)
+            {
+                storyboard.Begin(button);
+            }
         }
     }
 
@@ -212,20 +497,25 @@ public partial class MainWindow : Window
     {
         if (sender is Button button)
         {
-            var storyboard = (Storyboard)Resources["ButtonHoverRestore"];
-            storyboard?.Begin(button);
+            if (TryFindResource("ButtonHoverRestore") is Storyboard storyboard)
+            {
+                storyboard.Begin(button);
+            }
         }
     }
 
     private void ApplyEntranceAnimationToNewItem()
     {
-        if (FeedListBox.Items.Count > 0)
+        var feedListBox = _dashboardView.FeedListBox;
+        if (feedListBox.Items.Count > 0)
         {
-            var container = FeedListBox.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
+            var container = feedListBox.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem;
             if (container != null)
             {
-                var storyboard = (Storyboard)Resources["FeedItemEntranceAnimation"];
-                storyboard?.Begin(container);
+                if (TryFindResource("FeedItemEntranceAnimation") is Storyboard storyboard)
+                {
+                    storyboard.Begin(container);
+                }
 
                 // Apply pulse animation to progress bar for LIVE matches
                 if (container.DataContext is AlertItem item && item.MatchStatus?.Contains("LIVE") == true)
@@ -233,8 +523,10 @@ public partial class MainWindow : Window
                     var progressBar = FindVisualChild<ProgressBar>(container);
                     if (progressBar != null)
                     {
-                        var pulseStoryboard = (Storyboard)Resources["ProgressBarLiveAnimation"];
-                        pulseStoryboard?.Begin(progressBar);
+                        if (TryFindResource("ProgressBarLiveAnimation") is Storyboard pulseStoryboard)
+                        {
+                            pulseStoryboard.Begin(progressBar);
+                        }
                     }
                 }
             }
@@ -256,20 +548,68 @@ public partial class MainWindow : Window
         return null;
     }
 
-    private async Task CheckLiveDataAsync()
+    private async Task TriggerLiveCheckAsync(string source, bool addFeedOnMissingApiKey = true)
+    {
+        if (_isCheckingLiveData)
+        {
+            return;
+        }
+
+        _isCheckingLiveData = true;
+        try
+        {
+            await CheckLiveDataAsync(addFeedOnMissingApiKey);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("Live data error", ex.Message);
+            AddFeedItem("Live data error", ex.Message);
+            SetPersistentIssue("Live data error", ex.Message, $"fatal-live-check:{source}");
+        }
+        finally
+        {
+            _isCheckingLiveData = false;
+        }
+    }
+
+    private async Task CheckLiveDataAsync(bool addFeedOnMissingApiKey)
     {
         if (string.IsNullOrWhiteSpace(_settings.ApiKey))
         {
             SetStatus("Missing API key", "Add your football-data.org API key and save settings.");
+            SetPersistentIssue(
+                "Missing API key",
+                "Add your football-data.org API key in Settings to start match checks and alerts.",
+                "missing-api-key");
+            if (addFeedOnMissingApiKey)
+            {
+                AddFeedItem("Missing API key", "Add your football-data.org API key in Settings to start match checks and alerts.", "Info");
+            }
             return;
         }
 
         SetStatus("Checking live data", "Calling football-data.org...");
-        CheckNowButton.IsEnabled = false;
+        if (_dashboardView?.CheckNowButton != null)
+        {
+            _dashboardView.CheckNowButton.IsEnabled = false;
+        }
 
         try
         {
             var response = await FetchMatchesAsync();
+
+            // Update matches collection for MatchesView
+            _matches.Clear();
+            foreach (var match in response.Matches)
+            {
+                _matches.Add(match);
+            }
+
+            // Update Dashboard summary stats
+            var live     = _matches.Count(m => m.Status is "IN_PLAY" or "PAUSED");
+            var upcoming = _matches.Count(m => m.Status is "TIMED" or "SCHEDULED");
+            var finished = _matches.Count(m => m.Status is "FINISHED" or "AWARDED");
+            Dispatcher.Invoke(() => _dashboardView?.UpdateStats(live, upcoming, finished));
 
             var events = DetectEvents(response.Matches);
             foreach (var alert in events)
@@ -278,7 +618,15 @@ public partial class MainWindow : Window
 
                 if (_settings.NotificationsEnabled)
                 {
-                    await SendNativeNotificationAsync(alert.Title, alert.Message);
+                    try
+                    {
+                        await SendNativeNotificationAsync(alert.Title, alert.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        AddFeedItem("Native notification failed", ex.Message, "Info");
+                        SetStatus("Notification warning", "Native toast failed. Event still logged in-app.");
+                    }
                 }
             }
 
@@ -286,15 +634,20 @@ public partial class MainWindow : Window
                 ? $"No new alerts. Matches returned: {response.Matches.Count}."
                 : $"{events.Count} new alert(s). Matches returned: {response.Matches.Count}.";
             SetStatus("Live data checked", detail);
+            ClearPersistentIssue();
         }
         catch (Exception ex)
         {
             SetStatus("Live data error", ex.Message);
             AddFeedItem("Live data error", ex.Message);
+            SetPersistentIssue("Live data error", ex.Message, $"live-data-error:{ex.Message}");
         }
         finally
         {
-            CheckNowButton.IsEnabled = true;
+            if (_dashboardView?.CheckNowButton != null)
+            {
+                _dashboardView.CheckNowButton.IsEnabled = true;
+            }
         }
     }
 
@@ -472,15 +825,39 @@ public partial class MainWindow : Window
         AddFeedItem(title, message);
     }
 
-    private void UpdateFeedSummary()
-    {
-        FeedSummaryTextBlock.Text = _feed.Count == 0 ? "No alerts yet." : $"{_feed.Count} alert(s).";
-    }
-
     private void SetStatus(string status, string detail)
     {
         StatusTextBlock.Text = status;
         LastCheckedTextBlock.Text = detail;
+
+        var statusBrush = status.Contains("error", StringComparison.OrdinalIgnoreCase)
+            ? (Brush)Resources["StatusErrorBrush"]
+            : status.Contains("warning", StringComparison.OrdinalIgnoreCase)
+                ? (Brush)Resources["StatusGoalBrush"]
+                : status.Contains("checked", StringComparison.OrdinalIgnoreCase)
+                    ? (Brush)Resources["StatusKickoffBrush"]
+                    : (Brush)Resources["StatusFinalBrush"];
+
+        StatusTextBlock.Foreground = statusBrush;
+    }
+
+    private void SetPersistentIssue(string title, string detail, string issueKey)
+    {
+        if (_lastPersistentIssueKey == issueKey)
+        {
+            return;
+        }
+
+        _lastPersistentIssueKey = issueKey;
+        _dashboardView.SetPersistentMessage(title, detail);
+        _notificationsView.SetPersistentMessage(title, detail);
+    }
+
+    private void ClearPersistentIssue()
+    {
+        _lastPersistentIssueKey = null;
+        _dashboardView.ClearPersistentMessage();
+        _notificationsView.ClearPersistentMessage();
     }
 
     private static Task SendNativeNotificationAsync(string title, string message)
@@ -562,8 +939,18 @@ public sealed class FootballDataResponse
     public List<Match> Matches { get; set; } = [];
 }
 
-public sealed class Match
+public sealed class Match : System.ComponentModel.INotifyPropertyChanged
 {
+    private bool _isExpanded;
+
+    public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+
+    public bool IsExpanded
+    {
+        get => _isExpanded;
+        set { _isExpanded = value; PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(nameof(IsExpanded))); }
+    }
+
     [JsonPropertyName("id")]
     public int Id { get; set; }
 

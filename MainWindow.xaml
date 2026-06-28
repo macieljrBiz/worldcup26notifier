@@ -6,42 +6,52 @@
         Width="1120"
         MinHeight="680"
         MinWidth="980"
-        Background="{StaticResource WindowBackgroundBrush}">
-    <Grid Margin="{StaticResource MarginWindowOuter}">
+        Background="{StaticResource GlassmorphismOverlayDark}">
+    <Grid Margin="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="268" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-        <!-- Header Card -->
-        <Border Background="{StaticResource CardBackgroundBrush}" 
+        <Rectangle Grid.RowSpan="2" Grid.Column="0" RadiusX="24" RadiusY="24" Fill="#0E1B40" Opacity="0.95" />
+
+        <!-- Header Card (spans both columns) -->
+        <Border Grid.Row="0" Grid.ColumnSpan="2"
+            Background="{StaticResource HeaderHeroBackgroundBrush}" 
                 CornerRadius="20" 
-                Padding="{StaticResource MarginContainerPadding}" 
+                Padding="24,20" 
                 BorderBrush="{StaticResource BorderBrush}" 
                 BorderThickness="1"
                 Effect="{StaticResource ShadowEffectMedium}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="280" />
+                    <ColumnDefinition Width="260" />
                 </Grid.ColumnDefinitions>
+                <Image Source="{StaticResource HeroOrbsOverlayImage}" Stretch="Fill" Opacity="0.52" IsHitTestVisible="False" Grid.ColumnSpan="2" />
 
                 <StackPanel>
-                    <TextBlock Text="Soccer World Cup" 
-                               Foreground="{StaticResource PrimaryBrandBrush}" 
+                    <TextBlock Text="SOCCER WORLD CUP" 
+                               Foreground="White" 
                                FontWeight="Bold" 
-                               FontSize="{StaticResource FontSizeCaption}" />
+                               FontSize="{StaticResource FontSizeCaption}" 
+                               Opacity="0.9" />
                     <TextBlock Text="Native team notification tracker" 
                                FontSize="{StaticResource FontSizeHeader1}" 
                                FontWeight="Bold" 
-                               Foreground="{StaticResource PrimaryTextBrush}" 
-                               Margin="0,4,0,0" />
+                               Foreground="White" 
+                               Margin="0,6,0,0" />
                     <TextBlock Text="Track football-data.org match updates and get Windows native notifications for kickoff, goals, and final results."
-                               Foreground="{StaticResource SecondaryTextBrush}"
+                               Foreground="#DDE8FF"
                                FontSize="{StaticResource FontSizeBody}"
                                TextWrapping="Wrap"
-                               MaxWidth="720"
-                               Margin="0,10,0,0" />
+                               MaxWidth="700"
+                               Margin="0,12,0,0"
+                               LineHeight="29" />
                 </StackPanel>
 
                 <Grid Grid.Column="1">
@@ -54,36 +64,38 @@
                             BorderThickness="1" 
                             CornerRadius="16" 
                             Padding="{StaticResource SpaceLarge}"
+                            Margin="0,0,4,0"
                             Effect="{StaticResource ShadowEffectSubtle}">
                         <StackPanel>
                             <TextBlock Text="Status" 
-                                       Foreground="{StaticResource SecondaryTextBrush}" 
+                                       Foreground="#D8E6FF" 
                                        FontWeight="Bold" />
                             <TextBlock x:Name="StatusTextBlock" 
                                        Text="Idle" 
-                                       FontSize="24" 
+                                       FontSize="22" 
                                        FontWeight="Bold" 
                                        Foreground="{StaticResource StatusKickoffBrush}" 
-                                       Margin="0,4,0,0" />
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap" />
                             <TextBlock x:Name="LastCheckedTextBlock" 
                                        Text="Live data not checked yet." 
-                                       Foreground="{StaticResource SecondaryTextBrush}" 
+                                       Foreground="#D4E4FF" 
                                        TextWrapping="Wrap" 
-                                       Margin="0,8,0,0" />
+                                       Margin="0,10,0,0"
+                                       LineHeight="22" />
                         </StackPanel>
                     </Border>
                     <Button x:Name="SettingsButton" 
                             Grid.Column="1" 
-                            Content="⚙" 
                             Click="SettingsButton_Click" 
                             Width="48" 
                             Height="48" 
                             Margin="12,0,0,0" 
-                            FontSize="20" 
-                            Background="{StaticResource CardBackgroundBrush}" 
+                            Background="#22356B" 
                             BorderBrush="{StaticResource BorderBrush}" 
-                            Foreground="{StaticResource SecondaryTextBrush}" 
+                            Foreground="#DCE8FF" 
                             Cursor="Hand">
+                        <Image Source="{StaticResource NavIconSettingsImage}" Width="20" Height="20" Stretch="Uniform" />
                         <Button.RenderTransform>
                             <ScaleTransform ScaleX="1" ScaleY="1" />
                         </Button.RenderTransform>
@@ -92,188 +104,140 @@
             </Grid>
         </Border>
 
-        <!-- Main Content -->
-        <Grid Grid.Row="1" Margin="0,18,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="410" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <!-- Left Panel: Controls -->
-            <StackPanel Grid.Column="0">
-                <Border Background="{StaticResource CardBackgroundBrush}" 
-                        CornerRadius="20" 
-                        Padding="{StaticResource MarginContainerPadding}" 
-                        BorderBrush="{StaticResource BorderBrush}" 
-                        BorderThickness="1"
-                        Effect="{StaticResource ShadowEffectMedium}">
+        <!-- Sidebar Navigation (Grid.Row="1" Grid.Column="0") -->
+        <Border Grid.Row="1" Grid.Column="0" 
+            Background="{StaticResource ShellPanelTextureBrush}" 
+                CornerRadius="20" 
+                Padding="14" 
+                BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1"
+                Effect="{StaticResource ShadowEffectMedium}"
+                Margin="0,16,12,0">
+            <StackPanel>
+                <Border Background="#0B1840" CornerRadius="14" Padding="14" Margin="0,0,0,14" BorderBrush="#29498F" BorderThickness="1">
                     <StackPanel>
-                        <TextBlock Text="Live polling" 
-                                   FontSize="{StaticResource FontSizeHeader3}" 
-                                   FontWeight="Bold" 
-                                   Foreground="{StaticResource PrimaryTextBrush}" />
-                        <TextBlock Text="Keep this app running to monitor match changes. Native notifications are sent by Windows, not the browser."
-                                   Foreground="{StaticResource SecondaryTextBrush}"
-                                   TextWrapping="Wrap"
-                                   Margin="0,8,0,12" />
-                        <WrapPanel>
-                            <Button x:Name="CheckNowButton" 
-                                    Content="🔄 Check" 
-                                    Click="CheckNowButton_Click" 
-                                    Padding="14,8" 
-                                    Margin="0,0,8,8"
-                                    Background="{StaticResource CardBackgroundBrush}"
-                                    BorderBrush="{StaticResource BorderBrush}"
-                                    Foreground="{StaticResource PrimaryTextBrush}"
-                                    Cursor="Hand">
-                                <Button.RenderTransform>
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </Button.RenderTransform>
-                            </Button>
-                            <Button x:Name="StartStopButton" 
-                                    Content="▶ Start" 
-                                    Click="StartStopButton_Click" 
-                                    Padding="14,8" 
-                                    Margin="0,0,8,8"
-                                    Background="{StaticResource CardBackgroundBrush}"
-                                    BorderBrush="{StaticResource BorderBrush}"
-                                    Foreground="{StaticResource PrimaryTextBrush}"
-                                    Cursor="Hand">
-                                <Button.RenderTransform>
-                                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                                </Button.RenderTransform>
-                            </Button>
-                        </WrapPanel>
+                        <TextBlock Text="WORLD CUP HQ" FontWeight="Bold" Foreground="White" FontSize="14" />
+                        <TextBlock Text="Game-ready alerts and live tracking" Margin="0,4,0,0" Foreground="#BFD3FF" TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
+                <Button x:Name="DashboardNavButton" 
+                        Click="NavButton_Click" 
+                        Tag="Dashboard"
+                        Padding="12,12" 
+                        Margin="0,0,0,8"
+                        Background="{StaticResource PrimaryBrandBrush}"
+                        Foreground="White"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="{StaticResource NavIconDashboardImage}" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="Dashboard" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </StackPanel>
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </Button.RenderTransform>
+                </Button>
+                <Button x:Name="NotificationsNavButton" 
+                        
+                        Click="NavButton_Click" 
+                        Tag="Notifications"
+                        Padding="12,12" 
+                        Margin="0,0,0,8"
+                        Background="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="{StaticResource NavIconNotificationsImage}" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="Notifications" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </StackPanel>
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </Button.RenderTransform>
+                </Button>
+                <Button x:Name="MatchesNavButton" 
+                        
+                        Click="NavButton_Click" 
+                        Tag="Matches"
+                        Padding="12,12" 
+                        Margin="0,0,0,8"
+                        Background="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="{StaticResource NavIconMatchesImage}" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="Matches" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </StackPanel>
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </Button.RenderTransform>
+                </Button>
+                <Button x:Name="SettingsNavButton" 
+                        
+                        Click="NavButton_Click" 
+                        Tag="Settings"
+                        Padding="12,12" 
+                        Margin="0,0,0,8"
+                        Background="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="{StaticResource NavIconSettingsImage}" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="Settings" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </StackPanel>
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </Button.RenderTransform>
+                </Button>
+                <Button x:Name="AboutNavButton" 
+                        
+                        Click="NavButton_Click" 
+                        Tag="About"
+                        Padding="12,12" 
+                        Margin="0,0,0,0"
+                        Background="{StaticResource BorderBrush}"
+                        Foreground="{StaticResource PrimaryTextBrush}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Left"
+                        Cursor="Hand">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Image Source="{StaticResource NavIconAboutImage}" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="About" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    </StackPanel>
+                    <Button.RenderTransform>
+                        <ScaleTransform ScaleX="1" ScaleY="1" />
+                    </Button.RenderTransform>
+                </Button>
             </StackPanel>
+        </Border>
 
-            <!-- Right Panel: Feed -->
-            <Border Grid.Column="1" 
-                    Background="{StaticResource CardBackgroundBrush}" 
+        <!-- Main Content Area (Grid.Row="1" Grid.Column="1") -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0,18,0,0">
+            <!-- Content Container for switching views -->
+            <Border x:Name="ContentBorder" 
+                    Background="#101B3B" 
                     CornerRadius="20" 
                     Padding="{StaticResource MarginContainerPadding}" 
                     BorderBrush="{StaticResource BorderBrush}" 
-                    BorderThickness="1" 
-                    Margin="18,0,0,0"
+                    BorderThickness="1"
                     Effect="{StaticResource ShadowEffectMedium}">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <DockPanel>
-                        <StackPanel DockPanel.Dock="Left">
-                            <TextBlock Text="Notification feed" 
-                                       FontSize="{StaticResource FontSizeHeader3}" 
-                                       FontWeight="Bold" 
-                                       Foreground="{StaticResource PrimaryTextBrush}" />
-                            <TextBlock x:Name="FeedSummaryTextBlock" 
-                                       Text="No alerts yet." 
-                                       Foreground="{StaticResource SecondaryTextBrush}" 
-                                       Margin="0,4,0,0" />
-                        </StackPanel>
-                        <Button DockPanel.Dock="Right" 
-                                Content="🗑 Clear" 
-                                Click="ClearFeedButton_Click" 
-                                Padding="14,8" 
-                                HorizontalAlignment="Right"
-                                Background="{StaticResource CardBackgroundBrush}"
-                                BorderBrush="{StaticResource BorderBrush}"
-                                Foreground="{StaticResource PrimaryTextBrush}"
-                                Cursor="Hand">
-                            <Button.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </Button.RenderTransform>
-                        </Button>
-                    </DockPanel>
-                    <ListBox x:Name="FeedListBox" 
-                             Grid.Row="1" 
-                             Margin="0,16,0,0" 
-                             BorderBrush="{StaticResource BorderBrush}" 
-                             VerticalAlignment="Stretch" 
-                             VerticalContentAlignment="Stretch"
-                             Background="Transparent"
-                             BorderThickness="0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Border Padding="14" 
-                                        Margin="4" 
-                                        BorderBrush="{Binding EventType, Converter={StaticResource EventTypeConverter}}" 
-                                        BorderThickness="2" 
-                                        CornerRadius="14" 
-                                        Background="{Binding EventType, Converter={StaticResource EventTypeBackgroundConverter}}"
-                                        Effect="{StaticResource ShadowEffectSubtle}">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- Event Icon -->
-                                        <TextBlock Grid.Column="0"
-                                                   Text="{Binding EventIcon}"
-                                                   FontSize="24"
-                                                   VerticalAlignment="Top"
-                                                   Margin="0,0,12,0" />
-
-                                        <!-- Main Content -->
-                                        <StackPanel Grid.Column="1">
-                                            <!-- Event Title -->
-                                            <TextBlock Text="{Binding Title}" 
-                                                       FontWeight="Bold" 
-                                                       FontSize="{StaticResource FontSizeBody}"
-                                                       Foreground="{StaticResource PrimaryTextBrush}" 
-                                                       TextWrapping="Wrap" />
-                                            
-                                            <!-- Match Info (if available) -->
-                                            <TextBlock Text="{Binding MatchDisplay}" 
-                                                       FontSize="{StaticResource FontSizeBody}"
-                                                       FontWeight="SemiBold"
-                                                       Foreground="{StaticResource PrimaryTextBrush}" 
-                                                       Margin="0,6,0,0"
-                                                       Visibility="{Binding MatchDisplay, Converter={StaticResource NullToVisibilityConverter}}" />
-                                            
-                                            <!-- Score Display (if available) -->
-                                            <TextBlock Text="{Binding ScoreDisplay}" 
-                                                       FontSize="16"
-                                                       FontWeight="Bold"
-                                                       Foreground="{StaticResource PrimaryBrandBrush}" 
-                                                       Margin="0,3,0,0"
-                                                       Visibility="{Binding ScoreDisplay, Converter={StaticResource NullToVisibilityConverter}}" />
-
-                                            <!-- Message -->
-                                            <TextBlock Text="{Binding Message}" 
-                                                       Foreground="{StaticResource SecondaryTextBrush}" 
-                                                       TextWrapping="Wrap" 
-                                                       Margin="0,6,0,0" />
-
-                                            <!-- Match Progress Bar (if match in progress) -->
-                                            <ProgressBar Value="{Binding MatchProgressPercentage, Mode=OneWay}"
-                                                         Height="4"
-                                                         Margin="0,8,0,0"
-                                                         Background="{StaticResource BorderBrush}"
-                                                         Foreground="{StaticResource PrimaryBrandBrush}"
-                                                         Visibility="{Binding MatchStatus, Converter={StaticResource NullToVisibilityConverter}}" />
-                                        </StackPanel>
-
-                                        <!-- Timestamp -->
-                                        <StackPanel Grid.Column="2"
-                                                    VerticalAlignment="Top"
-                                                    HorizontalAlignment="Right"
-                                                    Margin="12,0,0,0">
-                                            <TextBlock Text="{Binding CreatedAtDisplay}" 
-                                                       Foreground="{StaticResource HintTextBrush}" 
-                                                       FontSize="{StaticResource FontSizeCaption}"
-                                                       TextAlignment="Right" />
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </Grid>
+                <ContentControl x:Name="ContentControl" Content="{x:Null}"/>
             </Border>
         </Grid>
     </Grid>
